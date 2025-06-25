@@ -76,7 +76,7 @@ const OwnerForm = ({ onAddCar }) => {
 
     try {
       await sendCarToBackend(newCar);
-      onAddCar(newCar); // Solo si fue exitoso
+      onAddCar(newCar); // Mostrar en frontend si fue exitoso
       setCarData({
         brand: '',
         model: '',
@@ -99,10 +99,79 @@ const OwnerForm = ({ onAddCar }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto p-6 bg-white rounded-2xl shadow-lg">
-      {/* ...todo tu formulario intacto... */}
-      {/* No he eliminado ni modificado ningún campo de entrada */}
-      {/* Puedes seguir usando tal cual lo tenías */}
-      {/* ... */}
+      <div>
+        <label htmlFor="brand" className="block text-gray-700 font-medium mb-2">Marca</label>
+        <input type="text" id="brand" name="brand" value={carData.brand} onChange={handleChange}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
+      </div>
+
+      <div>
+        <label htmlFor="model" className="block text-gray-700 font-medium mb-2">Modelo</label>
+        <input type="text" id="model" name="model" value={carData.model} onChange={handleChange}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
+      </div>
+
+      <div>
+        <label htmlFor="year" className="block text-gray-700 font-medium mb-2">Año</label>
+        <input type="number" id="year" name="year" value={carData.year} onChange={handleChange}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
+      </div>
+
+      <div>
+        <label htmlFor="pricePerDay" className="block text-gray-700 font-medium mb-2">Precio por Día ($)</label>
+        <input type="number" id="pricePerDay" name="pricePerDay" value={carData.pricePerDay} onChange={handleChange}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
+      </div>
+
+      <div>
+        <label htmlFor="location" className="block text-gray-700 font-medium mb-2">Ubicación</label>
+        <input type="text" id="location" name="location" value={carData.location} onChange={handleChange}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
+      </div>
+
+      <div>
+        <label htmlFor="imageUpload" className="block text-gray-700 font-medium mb-2">Foto del Vehículo</label>
+        <input type="file" id="imageUpload" name="imageUpload" accept="image/*" onChange={handleImageChange}
+          className="w-full" required />
+        {carData.imageUrl && (
+          <img src={carData.imageUrl} alt="Vista previa" className="mt-4 max-h-48 rounded-lg object-cover shadow-md" />
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="description" className="block text-gray-700 font-medium mb-2">Descripción</label>
+        <textarea id="description" name="description" value={carData.description} onChange={handleChange}
+          rows="4" className="w-full px-4 py-3 border border-gray-300 rounded-xl resize-none" required></textarea>
+      </div>
+
+      <div>
+        <label htmlFor="features" className="block text-gray-700 font-medium mb-2">Características (coma separadas)</label>
+        <input type="text" id="features" name="features" value={carData.features} onChange={handleChange}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
+      </div>
+
+      <div>
+        <label htmlFor="phoneNumber" className="block text-gray-700 font-medium mb-2">Teléfono</label>
+        <input type="tel" id="phoneNumber" name="phoneNumber" value={carData.phoneNumber} onChange={handleChange}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="startDate" className="block text-gray-700 font-medium mb-2">Desde</label>
+          <input type="date" id="startDate" name="startDate" value={carData.startDate} onChange={handleChange}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
+        </div>
+        <div>
+          <label htmlFor="endDate" className="block text-gray-700 font-medium mb-2">Hasta</label>
+          <input type="date" id="endDate" name="endDate" value={carData.endDate} onChange={handleChange}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
+        </div>
+      </div>
+
+      <button type="submit" className="w-full bg-gray-900 text-white py-3 rounded-xl hover:bg-gray-700 text-xl font-semibold shadow-lg">
+        Publicar Vehículo
+      </button>
     </form>
   );
 };
