@@ -16,7 +16,7 @@ function App() {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/cars');
+        const res = await fetch('https://backend-98mt.onrender.com/api/cars');
         if (!res.ok) throw new Error('Error en el servidor');
         const data = await res.json();
         setCars(data);
