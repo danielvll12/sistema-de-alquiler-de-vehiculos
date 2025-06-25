@@ -1,0 +1,26 @@
+# Dependencias de Node.js
+/node_modules
+
+# Archivos de build
+/build
+
+# Archivos de log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Entorno local
+.env
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Otros archivos temporales
+*.log
