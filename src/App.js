@@ -12,14 +12,14 @@ function App() {
   const [selectedCar, setSelectedCar] = useState(null);
   const loadedFromStorage = useRef(false);
 
-  // Cargar vehículos desde el backend o localStorage
+  // ✅ Cargar vehículos desde el backend (Render) o localStorage
   useEffect(() => {
     const fetchCars = async () => {
       try {
         const res = await fetch('https://backend-98mt.onrender.com/api/cars');
         if (!res.ok) throw new Error('Error en el servidor');
         const data = await res.json();
-        setCars(data);
+        setCars(data); // ✅ actualiza los autos desde el backend
       } catch (error) {
         console.warn('No se pudo cargar desde el backend. Usando localStorage o datos por defecto.');
 
@@ -37,7 +37,7 @@ function App() {
     fetchCars();
   }, []);
 
-  // Guardar cambios localmente si se cargó desde localStorage
+  // ✅ Guardar cambios localmente si vinieron de localStorage
   useEffect(() => {
     if (loadedFromStorage.current) {
       localStorage.setItem('cars', JSON.stringify(cars));
