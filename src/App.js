@@ -1,105 +1,52 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import LayoutHeader from './components/LayoutHeader';
 import CarListings from './components/CarListings';
 import CarDetailModal from './components/CarDetailModal';
 import OwnerForm from './components/OwnerForm';
 
-import initialCars from './mock/cars';
-
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [cars, setCars] = useState([]);
   const [selectedCar, setSelectedCar] = useState(null);
-  const loadedFromStorage = useRef(false);
 
-  // ✅ Cargar vehículos desde el backend (Render) o localStorage
   useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        const res = await fetch('https://backend-98mt.onrender.com/api/cars');
-        if (!res.ok) throw new Error('Error en el servidor');
-        const data = await res.json();
-        setCars(data); // ✅ actualiza los autos desde el backend
-      } catch (error) {
-        console.warn('No se pudo cargar desde el backend. Usando localStorage o datos por defecto.');
-
-        const storedCars = JSON.parse(localStorage.getItem('cars'));
-        if (storedCars && storedCars.length > 0) {
-          setCars(storedCars);
-        } else {
-          setCars(initialCars);
-        }
-      } finally {
-        loadedFromStorage.current = true;
-      }
-    };
-
-    fetchCars();
+    fetch('https://backend-98mt.onrender.com/api/cars')
+      .then(res => res.json())
+      .then(setCars)
+      .catch(err => {
+        console.error(err);
+        setCars([]); // o initialCars
+      });
   }, []);
 
-  // ✅ Guardar cambios localmente si vinieron de localStorage
-  useEffect(() => {
-    if (loadedFromStorage.current) {
-      localStorage.setItem('cars', JSON.stringify(cars));
+  const handleNavigate = page => setCurrentPage(page);
+  const handleSelectCar = car => setSelectedCar(car);
+  const handleCloseModal = () => setSelectedCar(null);
+
+  const handleAddCar = async (newCar) => {
+    setCars(prev => [...prev, newCar]);
+    try {
+      const res = await fetch('https://backend-98mt.onrender.com/api/cars', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(newCar),
+      });
+      if (!res.ok) throw new Error('Error backend');
+    } catch (err) {
+      console.error(err);
+      alert('No se pudo guardar el auto');
     }
-  }, [cars]);
-
-  const handleNavigate = (page) => {
-    setCurrentPage(page);
-    setSelectedCar(null);
-  };
-
-  const handleSelectCar = (car) => {
-    setSelectedCar(car);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedCar(null);
-  };
-
-  const handleAddCar = (newCar) => {
-    setCars((prevCars) => [...prevCars, newCar]);
     setCurrentPage('rent');
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
+    <div className="min-h-screen ...">
       <LayoutHeader onNavigate={handleNavigate} />
-
       <main className="pt-16">
-        {currentPage === 'home' && (
-          <section className="relative h-[60vh] flex items-center justify-center bg-gradient-to-r from-gray-900 to-gray-700 text-white text-center px-4">
-            <div className="z-10">
-              <h2 className="text-5xl md:text-6xl font-extrabold mb-4 leading-tight">
-                Tu Viaje, Tu Elección
-              </h2>
-              <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
-                Encuentra el vehículo perfecto para tu próxima aventura en El Salvador.
-              </p>
-              <button
-                onClick={() => handleNavigate('rent')}
-                className="bg-white text-gray-900 px-8 py-4 rounded-full text-xl font-semibold shadow-lg hover:bg-gray-200 transition-all transform hover:scale-105"
-              >
-                Explorar Vehículos
-              </button>
-            </div>
-            <div
-              className="absolute inset-0 bg-cover bg-center opacity-30"
-              style={{
-                backgroundImage:
-                  "url('https://via.placeholder.com/1920x1080/333333/EEEEEE?text=El+Salvador+Road')",
-              }}
-            ></div>
-          </section>
-        )}
-
-        {currentPage === 'rent' && (
-          <CarListings cars={cars} onSelectCar={handleSelectCar} />
-        )}
-
-        {currentPage === 'owner' && <OwnerForm onAddCar={handleAddCar} />}
+        {currentPage==='home' }&& /* sección home */
+        {currentPage==='rent' && <CarListings cars={cars} onSelectCar={handleSelectCar} />}
+        {currentPage==='owner' && <OwnerForm onAddCar={handleAddCar} />}
       </main>
-
       {selectedCar && <CarDetailModal car={selectedCar} onClose={handleCloseModal} />}
     </div>
   );
