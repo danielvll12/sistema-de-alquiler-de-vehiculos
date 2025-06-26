@@ -53,11 +53,11 @@ const CarDetailModal = ({ car, onClose }) => {
                 <span className="font-semibold text-gray-800">
                   Disponible de:
                 </span>{' '}
-                {car.availability.startDate}
+                {car.startDate}
               </p>
               <p className="text-gray-600 text-lg">
                 <span className="font-semibold text-gray-800">Hasta:</span>{' '}
-                {car.availability.endDate}
+                {car.endDate}
               </p>
             </div>
             <div>
