@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CarCard = ({ car, onSelectCar }) => {
+const CarCard = ({ car, onSelectCar, onDeleteCar }) => {
   return (
     <div
       className="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 cursor-pointer border border-gray-200"
@@ -21,15 +21,28 @@ const CarCard = ({ car, onSelectCar }) => {
             ${car.pricePerDay}
             <span className="text-base font-normal text-gray-600">/semana</span>
           </span>
-          <button
-            onClick={(e) => {
-              e.stopPropagation(); // Previene doble clic si el contenedor también tiene onClick
-              onSelectCar(car);
-            }}
-            className="bg-gray-900 text-white px-5 py-2 rounded-xl hover:bg-gray-700 transition-colors text-lg"
-          >
-            Ver Detalles
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // No abrir modal
+                onSelectCar(car);
+              }}
+              className="bg-gray-900 text-white px-5 py-2 rounded-xl hover:bg-gray-700 transition-colors text-lg"
+            >
+              Ver Detalles
+            </button>
+            <button
+              onClick={async (e) => {
+                e.stopPropagation(); // No abrir modal
+                if (window.confirm(`¿Eliminar vehículo ${car.brand} ${car.model}?`)) {
+                  await onDeleteCar(car.id);
+                }
+              }}
+              className="bg-red-600 text-white px-5 py-2 rounded-xl hover:bg-red-700 transition-colors text-lg"
+            >
+              Eliminar
+            </button>
+          </div>
         </div>
       </div>
     </div>

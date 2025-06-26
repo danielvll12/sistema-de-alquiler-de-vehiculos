@@ -51,6 +51,22 @@ function App() {
     setCurrentPage('rent');
   };
 
+  // Aquí agregas la función para eliminar vehículo
+  const handleDeleteCar = async (carId) => {
+    try {
+      const res = await fetch(`https://backend-98mt.onrender.com/api/cars/${carId}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw new Error('Error eliminando vehículo');
+
+      // Actualizar estado para remover vehículo eliminado
+      setCars((prevCars) => prevCars.filter(car => car.id !== carId));
+    } catch (err) {
+      console.error(err);
+      alert('No se pudo eliminar el vehículo');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
       <LayoutHeader onNavigate={handleNavigate} />
@@ -83,7 +99,11 @@ function App() {
         )}
 
         {currentPage === 'rent' && (
-          <CarListings cars={cars} onSelectCar={handleSelectCar} />
+          <CarListings
+            cars={cars}
+            onSelectCar={handleSelectCar}
+            onDeleteCar={handleDeleteCar}  // <-- aquí agregas esta prop
+          />
         )}
 
         {currentPage === 'owner' && <OwnerForm onAddCar={handleAddCar} />}
