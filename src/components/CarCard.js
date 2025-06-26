@@ -1,8 +1,8 @@
 import React from 'react';
-import { getUserRole } from '../utils/auth'; // ✅ Agregado
+import { getUserRole } from '../utils/auth';
 
 const CarCard = ({ car, onSelectCar, onDeleteCar }) => {
-  const role = getUserRole(); // ✅ Obtener rol del usuario
+  const role = getUserRole();
 
   return (
     <div
@@ -35,11 +35,11 @@ const CarCard = ({ car, onSelectCar, onDeleteCar }) => {
               Ver Detalles
             </button>
 
-            {/* ✅ Mostrar solo si el usuario es admin */}
-            {role === 'admin' && (
+            {/* Mostrar solo si el usuario es admin y existe onDeleteCar */}
+            {role === 'admin' && onDeleteCar && (
               <button
                 onClick={async (e) => {
-                  e.stopPropagation(); // No abrir modal
+                  e.stopPropagation();
                   if (window.confirm(`¿Eliminar vehículo ${car.brand} ${car.model}?`)) {
                     await onDeleteCar(car.id);
                   }
