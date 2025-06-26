@@ -3,22 +3,30 @@ import LayoutHeader from './components/LayoutHeader';
 import CarListings from './components/CarListings';
 import CarDetailModal from './components/CarDetailModal';
 import OwnerForm from './components/OwnerForm';
+import Login from './components/Login';
+import Register from './components/Register';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [cars, setCars] = useState([]);
   const [selectedCar, setSelectedCar] = useState(null);
 
+  // Estado para autenticación
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [role, setRole] = useState(localStorage.getItem('role') || null);
+
+  // Cargar autos desde backend
   useEffect(() => {
     fetch('https://backend-98mt.onrender.com/api/cars')
       .then(res => res.json())
       .then(setCars)
       .catch(err => {
         console.error(err);
-        setCars([]); // o initialCars como respaldo si quieres
+        setCars([]);
       });
   }, []);
 
+  // Navegación simple
   const handleNavigate = (page) => {
     setCurrentPage(page);
     setSelectedCar(null);
@@ -32,44 +40,111 @@ function App() {
     setSelectedCar(null);
   };
 
+  // Agregar nuevo auto
   const handleAddCar = async (newCar) => {
-    setCars(prev => [...prev, newCar]);
-
     try {
       const res = await fetch('https://backend-98mt.onrender.com/api/cars', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify(newCar),
       });
 
       if (!res.ok) throw new Error('Error backend');
+      const savedCar = await res.json();
+
+      setCars(prev => [...prev, savedCar]);
+      setCurrentPage('rent');
     } catch (err) {
       console.error(err);
       alert('No se pudo guardar el auto');
     }
-
-    setCurrentPage('rent');
   };
 
-  // Aquí agregas la función para eliminar vehículo
+  // Eliminar auto (solo admins)
   const handleDeleteCar = async (carId) => {
+    if (!token) {
+      alert('Debes iniciar sesión como administrador para eliminar autos');
+      return;
+    }
+
     try {
       const res = await fetch(`https://backend-98mt.onrender.com/api/cars/${carId}`, {
         method: 'DELETE',
+        headers: { 
+          Authorization: `Bearer ${token}`
+        }
       });
-      if (!res.ok) throw new Error('Error eliminando vehículo');
 
-      // Actualizar estado para remover vehículo eliminado
-      setCars((prevCars) => prevCars.filter(car => car.id !== carId));
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || 'Error al eliminar vehículo');
+        return;
+      }
+
+      setCars(prev => prev.filter(car => car.id !== carId));
+      alert('Vehículo eliminado correctamente');
     } catch (err) {
       console.error(err);
-      alert('No se pudo eliminar el vehículo');
+      alert('Error al eliminar vehículo');
     }
   };
 
+  // Login: guardar token y rol
+  const handleLogin = (token, role) => {
+    setToken(token);
+    setRole(role);
+    localStorage.setItem('token', token);
+    localStorage.setItem('role', role);
+    setCurrentPage('rent');
+  };
+
+  // Logout: limpiar token y rol
+  const handleLogout = () => {
+    setToken(null);
+    setRole(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    setCurrentPage('home');
+  };
+
+  // Mostrar botón eliminar solo para admins
+  const isAdmin = role === 'admin';
+
+  // Renderizar según autenticación
+  if (!token) {
+    return (
+      <div>
+        <LayoutHeader onNavigate={handleNavigate} onLogout={handleLogout} isLoggedIn={false} />
+        {currentPage === 'login' && <Login onLogin={handleLogin} />}
+        {currentPage === 'register' && <Register onRegister={() => setCurrentPage('login')} />}
+        {(currentPage === 'home' || !['login', 'register'].includes(currentPage)) && (
+          <div className="text-center mt-20">
+            <h1 className="text-4xl font-bold mb-4">Bienvenido a CarRentSV</h1>
+            <button
+              onClick={() => setCurrentPage('login')}
+              className="bg-blue-600 text-white px-6 py-3 rounded-md"
+            >
+              Iniciar Sesión
+            </button>{' '}
+            <button
+              onClick={() => setCurrentPage('register')}
+              className="bg-green-600 text-white px-6 py-3 rounded-md"
+            >
+              Registrarse
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Usuario autenticado
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
-      <LayoutHeader onNavigate={handleNavigate} />
+      <LayoutHeader onNavigate={handleNavigate} onLogout={handleLogout} isLoggedIn={true} />
 
       <main className="pt-16">
         {currentPage === 'home' && (
@@ -99,10 +174,10 @@ function App() {
         )}
 
         {currentPage === 'rent' && (
-          <CarListings
-            cars={cars}
-            onSelectCar={handleSelectCar}
-            onDeleteCar={handleDeleteCar}  // <-- aquí agregas esta prop
+          <CarListings 
+            cars={cars} 
+            onSelectCar={handleSelectCar} 
+            onDeleteCar={isAdmin ? handleDeleteCar : null} 
           />
         )}
 

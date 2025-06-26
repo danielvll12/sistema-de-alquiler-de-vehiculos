@@ -1,6 +1,9 @@
 import React from 'react';
+import { getUserRole } from '../utils/auth'; // ✅ Agregado
 
 const CarCard = ({ car, onSelectCar, onDeleteCar }) => {
+  const role = getUserRole(); // ✅ Obtener rol del usuario
+
   return (
     <div
       className="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 cursor-pointer border border-gray-200"
@@ -31,17 +34,21 @@ const CarCard = ({ car, onSelectCar, onDeleteCar }) => {
             >
               Ver Detalles
             </button>
-            <button
-              onClick={async (e) => {
-                e.stopPropagation(); // No abrir modal
-                if (window.confirm(`¿Eliminar vehículo ${car.brand} ${car.model}?`)) {
-                  await onDeleteCar(car.id);
-                }
-              }}
-              className="bg-red-600 text-white px-5 py-2 rounded-xl hover:bg-red-700 transition-colors text-lg"
-            >
-              Eliminar
-            </button>
+
+            {/* ✅ Mostrar solo si el usuario es admin */}
+            {role === 'admin' && (
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation(); // No abrir modal
+                  if (window.confirm(`¿Eliminar vehículo ${car.brand} ${car.model}?`)) {
+                    await onDeleteCar(car.id);
+                  }
+                }}
+                className="bg-red-600 text-white px-5 py-2 rounded-xl hover:bg-red-700 transition-colors text-lg"
+              >
+                Eliminar
+              </button>
+            )}
           </div>
         </div>
       </div>
