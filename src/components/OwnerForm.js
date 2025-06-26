@@ -67,11 +67,15 @@ const OwnerForm = ({ onAddCar }) => {
       imageUrl: carData.imageUrl,
       description: carData.description,
       features: carData.features.split(',').map((f) => f.trim()),
+      // Cambié esta parte para enviar fechas como campos planos, no dentro de availability
+      startDate: carData.startDate,
+      endDate: carData.endDate,
+      phoneNumber: carData.phoneNumber,
+      // Mantengo availability por si quieres usarlo después o para no eliminar nada
       availability: {
         startDate: carData.startDate,
         endDate: carData.endDate,
       },
-      phoneNumber: carData.phoneNumber,
     };
 
     try {

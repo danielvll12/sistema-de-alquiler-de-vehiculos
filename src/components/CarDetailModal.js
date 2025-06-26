@@ -50,16 +50,12 @@ const CarDetailModal = ({ car, onClose }) => {
                 {car.pricePerDay}/día
               </p>
               <p className="text-gray-600 text-lg mb-2">
-                <span className="font-semibold text-gray-800">
-                  Disponible de:
-                </span>{' '}
-                {car.availability?.startDate}
+                <span className="font-semibold text-gray-800">Disponible de:</span>{' '}
+                {car.startDate ?? car.availability?.startDate}
               </p>
               <p className="text-gray-600 text-lg">
-                <span className="font-semibold text-gray-800">
-                  Hasta:
-                </span>{' '}
-                {car.availability?.endDate}
+                <span className="font-semibold text-gray-800">Hasta:</span>{' '}
+                {car.endDate ?? car.availability?.endDate}
               </p>
             </div>
             <div>
@@ -81,7 +77,6 @@ const CarDetailModal = ({ car, onClose }) => {
             {car.description}
           </p>
 
-          {/* BOTONES DE CONTACTO */}
           <div className="flex flex-col md:flex-row gap-4">
             {car.phoneNumber && (
               <a
