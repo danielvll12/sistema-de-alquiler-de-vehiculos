@@ -121,11 +121,19 @@ const OwnerForm = ({ onAddCar }) => {
           className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
       </div>
 
-      <div>
-        <label htmlFor="pricePerDay" className="block text-gray-700 font-medium mb-2">Precio por Día ($)</label>
-        <input type="number" id="pricePerDay" name="pricePerDay" value={carData.pricePerDay} onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
-      </div>
+     <div>
+  <label htmlFor="pricePerDay" className="block text-gray-700 font-medium mb-2">Precio por Semana ($)</label>
+  <input
+    type="number"
+    id="pricePerDay"
+    name="pricePerDay"
+    value={carData.pricePerDay}
+    onChange={handleChange}
+    className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+    required
+  />
+</div>
+
 
       <div>
         <label htmlFor="location" className="block text-gray-700 font-medium mb-2">Ubicación</label>

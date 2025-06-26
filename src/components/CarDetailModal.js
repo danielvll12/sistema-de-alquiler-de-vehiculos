@@ -45,10 +45,10 @@ const CarDetailModal = ({ car, onClose }) => {
                 <span className="font-semibold text-gray-800">Ubicación:</span>{' '}
                 {car.location}
               </p>
-              <p className="text-gray-600 text-lg mb-2">
-                <span className="font-semibold text-gray-800">Precio:</span> $
-                {car.pricePerDay}/día
-              </p>
+             <p className="text-gray-600 text-lg mb-2">
+            <span className="font-semibold text-gray-800">Precio:</span> ${car.pricePerDay}/semana
+                </p>
+
               <p className="text-gray-600 text-lg mb-2">
                 <span className="font-semibold text-gray-800">Disponible de:</span>{' '}
                 {car.startDate ?? car.availability?.startDate}

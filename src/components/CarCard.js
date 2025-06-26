@@ -19,7 +19,7 @@ const CarCard = ({ car, onSelectCar }) => {
         <div className="flex justify-between items-center">
           <span className="text-2xl font-bold text-gray-900">
             ${car.pricePerDay}
-            <span className="text-base font-normal text-gray-600">/día</span>
+            <span className="text-base font-normal text-gray-600">/semana</span>
           </span>
           <button
             onClick={(e) => {
