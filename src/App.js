@@ -17,7 +17,7 @@ function App() {
   const [token, setToken] = useState(getToken());
   const [role, setRole] = useState(getUserRole());
 
-  // Cargar autos desde backend
+  // Cargar autos desde backend, y refrescar cuando cambia token (login/logout)
   useEffect(() => {
     fetch('https://backend-98mt.onrender.com/api/cars')
       .then(res => res.json())
@@ -26,7 +26,7 @@ function App() {
         console.error(err);
         setCars([]);
       });
-  }, []);
+  }, [token]); // recarga autos cuando cambia token
 
   // Navegación simple
   const handleNavigate = (page) => {

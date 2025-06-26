@@ -1,70 +1,75 @@
 import React, { useState } from 'react';
-import { saveAuthData } from '../utils/auth';
 
-const Login = ({ onLoginSuccess }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const LoginForm = ({ onLogin }) => {
+  const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setError('');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
 
     try {
       const res = await fetch('https://backend-98mt.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(form),
       });
 
       const data = await res.json();
 
-      if (!res.ok) {
-        setError(data.error || 'Error en el login');
-        return;
-      }
+      if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión');
 
-      // Guardar token y rol en localStorage
-      saveAuthData(data.token, data.role);
-
-      // Opcional: llamar función para actualizar estado en App.js o padre
-      if (onLoginSuccess) onLoginSuccess();
-
+      // onLogin recibe el token y rol para guardarlos en el estado y localStorage
+      onLogin(data.token, data.role);
     } catch (err) {
-      setError('Error de conexión al servidor');
+      setError(err.message);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded shadow mt-10">
-      <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
-      {error && <p className="text-red-600 mb-4">{error}</p>}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-          className="border border-gray-300 rounded px-3 py-2"
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-          className="border border-gray-300 rounded px-3 py-2"
-        />
+    <div className="max-w-md mx-auto mt-16 bg-white p-8 rounded-lg shadow-md">
+      <h2 className="text-3xl font-bold mb-6 text-center text-gray-900">Iniciar Sesión</h2>
+
+      <form onSubmit={handleSubmit}>
+        <label className="block mb-4">
+          <span className="text-gray-700">Correo electrónico:</span>
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            className="mt-1 block w-full border rounded-md px-4 py-2"
+            required
+          />
+        </label>
+
+        <label className="block mb-6">
+          <span className="text-gray-700">Contraseña:</span>
+          <input
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            className="mt-1 block w-full border rounded-md px-4 py-2"
+            required
+          />
+        </label>
+
+        {error && <p className="text-red-600 mb-4">{error}</p>}
+
         <button
           type="submit"
-          className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          className="bg-blue-600 text-white w-full py-2 rounded-md hover:bg-blue-700 transition"
         >
-          Entrar
+          Iniciar Sesión
         </button>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default LoginForm;
