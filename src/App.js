@@ -3,8 +3,7 @@ import LayoutHeader from './components/LayoutHeader';
 import CarListings from './components/CarListings';
 import CarDetailModal from './components/CarDetailModal';
 import OwnerForm from './components/OwnerForm';
-import Login from './components/Login';
-import Register from './components/Register';
+import Register from './components/RegisterForm';
 
 import { getToken, getUserRole, saveAuthData, clearAuthData } from './utils/auth';
 
