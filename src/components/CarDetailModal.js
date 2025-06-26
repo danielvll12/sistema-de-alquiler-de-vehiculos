@@ -53,11 +53,13 @@ const CarDetailModal = ({ car, onClose }) => {
                 <span className="font-semibold text-gray-800">
                   Disponible de:
                 </span>{' '}
-                {car.startDate}
+                {car.availability?.startDate}
               </p>
               <p className="text-gray-600 text-lg">
-                <span className="font-semibold text-gray-800">Hasta:</span>{' '}
-                {car.endDate}
+                <span className="font-semibold text-gray-800">
+                  Hasta:
+                </span>{' '}
+                {car.availability?.endDate}
               </p>
             </div>
             <div>
@@ -81,22 +83,25 @@ const CarDetailModal = ({ car, onClose }) => {
 
           {/* BOTONES DE CONTACTO */}
           <div className="flex flex-col md:flex-row gap-4">
-            <a
-              href={`tel:${car.phoneNumber}`}
-              className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-colors text-xl font-semibold text-center"
-            >
-              Llamar al Propietario
-            </a>
+            {car.phoneNumber && (
+              <a
+                href={`tel:${car.phoneNumber}`}
+                className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-colors text-xl font-semibold text-center"
+              >
+                Llamar al Propietario
+              </a>
+            )}
 
-            <a
-              href={`https://wa.me/503${(car.phoneNumber || '').replace(/\D/g, '')}?text=Hola, estoy interesado en rentar tu vehículo ${car.brand} ${car.model}.`}
-
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition-colors text-xl font-semibold text-center"
-            >
-              Contactar por WhatsApp
-            </a>
+            {car.phoneNumber && (
+              <a
+                href={`https://wa.me/503${car.phoneNumber.replace(/\D/g, '')}?text=Hola, estoy interesado en rentar tu vehículo ${car.brand} ${car.model}.`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition-colors text-xl font-semibold text-center"
+              >
+                Contactar por WhatsApp
+              </a>
+            )}
           </div>
         </div>
       </div>
