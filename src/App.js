@@ -6,14 +6,16 @@ import OwnerForm from './components/OwnerForm';
 import Login from './components/Login';
 import Register from './components/Register';
 
+import { getToken, getUserRole, saveAuthData, clearAuthData } from './utils/auth';
+
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [cars, setCars] = useState([]);
   const [selectedCar, setSelectedCar] = useState(null);
 
-  // Estado para autenticación
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
-  const [role, setRole] = useState(localStorage.getItem('role') || null);
+  // Estados para autenticación usando utils/auth.js
+  const [token, setToken] = useState(getToken());
+  const [role, setRole] = useState(getUserRole());
 
   // Cargar autos desde backend
   useEffect(() => {
@@ -92,25 +94,22 @@ function App() {
     }
   };
 
-  // Login: guardar token y rol
-  const handleLogin = (token, role) => {
-    setToken(token);
-    setRole(role);
-    localStorage.setItem('token', token);
-    localStorage.setItem('role', role);
+  // Login: guardar token y rol usando utils/auth.js
+  const handleLogin = (newToken, newRole) => {
+    setToken(newToken);
+    setRole(newRole);
+    saveAuthData(newToken, newRole);
     setCurrentPage('rent');
   };
 
-  // Logout: limpiar token y rol
+  // Logout: limpiar token y rol usando utils/auth.js
   const handleLogout = () => {
     setToken(null);
     setRole(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
+    clearAuthData();
     setCurrentPage('home');
   };
 
-  // Mostrar botón eliminar solo para admins
   const isAdmin = role === 'admin';
 
   // Renderizar según autenticación
@@ -141,7 +140,6 @@ function App() {
     );
   }
 
-  // Usuario autenticado
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
       <LayoutHeader onNavigate={handleNavigate} onLogout={handleLogout} isLoggedIn={true} />
