@@ -50,7 +50,7 @@ const CarDetailModal = ({ car, onClose }) => {
                 </p>
 
               <p className="text-gray-600 text-lg mb-2">
-                <span className="font-semibold text-gray-800">Disponible de:</span>{' '}
+                <span className="font-semibold text-gray-800">Disponible desde:</span>{' '}
                 {car.startDate ?? car.availability?.startDate}
               </p>
               
