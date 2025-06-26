@@ -1,44 +1,19 @@
 // src/utils/auth.js
 
-export const getToken = () => {
-  try {
-    return localStorage.getItem('token');
-  } catch (error) {
-    console.error('Error obteniendo token:', error);
-    return null;
-  }
-};
+// Función para obtener el token JWT del localStorage
+export const getToken = () => localStorage.getItem('token');
 
-export const getUserRole = () => {
-  try {
-    return localStorage.getItem('role');
-  } catch (error) {
-    console.error('Error obteniendo rol:', error);
-    return null;
-  }
-};
+// Función para obtener el rol del usuario del localStorage
+export const getUserRole = () => localStorage.getItem('role');
 
+// Función para guardar token y rol (opcional, si quieres centralizarlo)
 export const saveAuthData = (token, role) => {
-  try {
-    localStorage.setItem('token', token);
-    localStorage.setItem('role', role);
-  } catch (error) {
-    console.error('Error guardando datos de autenticación:', error);
-  }
+  localStorage.setItem('token', token);
+  localStorage.setItem('role', role);
 };
 
+// Función para limpiar token y rol (logout)
 export const clearAuthData = () => {
-  try {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-  } catch (error) {
-    console.error('Error limpiando datos de autenticación:', error);
-  }
-};
-
-export default {
-  getToken,
-  getUserRole,
-  saveAuthData,
-  clearAuthData,
+  localStorage.removeItem('token');
+  localStorage.removeItem('role');
 };
