@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const LayoutHeader = ({ onNavigate }) => {
+const LayoutHeader = ({ onNavigate, onLogout, isLoggedIn }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
@@ -21,7 +21,7 @@ const LayoutHeader = ({ onNavigate }) => {
         </h1>
 
         {/* Menú escritorio */}
-        <nav className="hidden md:flex space-x-6">
+        <nav className="hidden md:flex space-x-6 items-center">
           <button
             onClick={() => handleNavigate('home')}
             className="text-gray-600 hover:text-gray-900 transition-colors text-lg font-medium"
@@ -40,10 +40,36 @@ const LayoutHeader = ({ onNavigate }) => {
           >
             Publicar mi Vehículo
           </button>
+
+          {/* BOTÓN CERRAR SESIÓN - Solo si está logueado */}
+          {isLoggedIn && (
+            <button
+              onClick={() => {
+                onLogout();
+                setMenuOpen(false);
+              }}
+              className="ml-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition"
+            >
+              Cerrar Sesión
+            </button>
+          )}
         </nav>
 
         {/* Botón hamburguesa móvil */}
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center gap-4">
+          {/* Si está logueado, mostrar botón cerrar sesión también en móvil */}
+          {isLoggedIn && (
+            <button
+              onClick={() => {
+                onLogout();
+                setMenuOpen(false);
+              }}
+              className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition"
+            >
+              Cerrar Sesión
+            </button>
+          )}
+
           <button
             onClick={toggleMenu}
             aria-label="Abrir menú"
