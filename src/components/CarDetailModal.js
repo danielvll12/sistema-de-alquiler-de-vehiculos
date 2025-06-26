@@ -89,7 +89,8 @@ const CarDetailModal = ({ car, onClose }) => {
             </a>
 
             <a
-              href={`https://wa.me/503${car.phoneNumber.replace(/\D/g, '')}?text=Hola, estoy interesado en rentar tu vehículo ${car.brand} ${car.model}.`}
+              href={`https://wa.me/503${(car.phoneNumber || '').replace(/\D/g, '')}?text=Hola, estoy interesado en rentar tu vehículo ${car.brand} ${car.model}.`}
+
               target="_blank"
               rel="noopener noreferrer"
               className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition-colors text-xl font-semibold text-center"
