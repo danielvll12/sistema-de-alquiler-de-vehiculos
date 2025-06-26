@@ -17,16 +17,8 @@ const carSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
-  startDate: String,       // ✅ Fecha directa
-  endDate: String,         // ✅ Fecha directa
-  phoneNumber: String,     // ✅ Teléfono del propietario
-
-  // Opcional: por compatibilidad con estructuras anteriores
-  availability: {
-    startDate: String,
-    endDate: String
-  }
-
+  startDate: String,       // ✅ Solo esta fecha se mantiene
+  phoneNumber: String,
 }, { timestamps: true });
 
 module.exports = mongoose.model('Car', carSchema);

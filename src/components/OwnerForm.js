@@ -11,7 +11,6 @@ const OwnerForm = ({ onAddCar }) => {
     description: '',
     features: '',
     startDate: '',
-    endDate: '',
     phoneNumber: '',
   });
 
@@ -67,20 +66,13 @@ const OwnerForm = ({ onAddCar }) => {
       imageUrl: carData.imageUrl,
       description: carData.description,
       features: carData.features.split(',').map((f) => f.trim()),
-      // Cambié esta parte para enviar fechas como campos planos, no dentro de availability
       startDate: carData.startDate,
-      endDate: carData.endDate,
       phoneNumber: carData.phoneNumber,
-      // Mantengo availability por si quieres usarlo después o para no eliminar nada
-      availability: {
-        startDate: carData.startDate,
-        endDate: carData.endDate,
-      },
     };
 
     try {
       await sendCarToBackend(newCar);
-      onAddCar(newCar); // Mostrar en frontend si fue exitoso
+      onAddCar(newCar);
       setCarData({
         brand: '',
         model: '',
@@ -91,7 +83,6 @@ const OwnerForm = ({ onAddCar }) => {
         description: '',
         features: '',
         startDate: '',
-        endDate: '',
         phoneNumber: '',
       });
       alert('¡Vehículo publicado con éxito!');
@@ -121,19 +112,11 @@ const OwnerForm = ({ onAddCar }) => {
           className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
       </div>
 
-     <div>
-  <label htmlFor="pricePerDay" className="block text-gray-700 font-medium mb-2">Precio por Semana ($)</label>
-  <input
-    type="number"
-    id="pricePerDay"
-    name="pricePerDay"
-    value={carData.pricePerDay}
-    onChange={handleChange}
-    className="w-full px-4 py-3 border border-gray-300 rounded-xl"
-    required
-  />
-</div>
-
+      <div>
+        <label htmlFor="pricePerDay" className="block text-gray-700 font-medium mb-2">Precio por Semana ($)</label>
+        <input type="number" id="pricePerDay" name="pricePerDay" value={carData.pricePerDay} onChange={handleChange}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
+      </div>
 
       <div>
         <label htmlFor="location" className="block text-gray-700 font-medium mb-2">Ubicación</label>
@@ -168,17 +151,10 @@ const OwnerForm = ({ onAddCar }) => {
           className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="startDate" className="block text-gray-700 font-medium mb-2">Desde</label>
-          <input type="date" id="startDate" name="startDate" value={carData.startDate} onChange={handleChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
-        </div>
-        <div>
-          <label htmlFor="endDate" className="block text-gray-700 font-medium mb-2">Hasta</label>
-          <input type="date" id="endDate" name="endDate" value={carData.endDate} onChange={handleChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
-        </div>
+      <div>
+        <label htmlFor="startDate" className="block text-gray-700 font-medium mb-2">Disponible desde</label>
+        <input type="date" id="startDate" name="startDate" value={carData.startDate} onChange={handleChange}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
       </div>
 
       <button type="submit" className="w-full bg-gray-900 text-white py-3 rounded-xl hover:bg-gray-700 text-xl font-semibold shadow-lg">
