@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getToken } from '../utils/auth';
 
 
 
@@ -38,14 +39,18 @@ const OwnerForm = ({ onAddCar }) => {
     }
   };
 
-  const sendCarToBackend = async (newCar) => {
-    const response = await fetch('https://backend-98mt.onrender.com/api/cars', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newCar),
-    });
+     const sendCarToBackend = async (newCar) => {
+  const token = getToken(); // obtener el token del localStorage
+
+  const response = await fetch('https://backend-98mt.onrender.com/api/cars', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(newCar),
+  });
+  
 
     if (!response.ok) {
       throw new Error('Error al guardar el vehículo en el servidor');
