@@ -16,6 +16,8 @@ function App() {
   const [token, setToken] = useState(getToken());
   const [role, setRole] = useState(getUserRole());
 
+  const isAdmin = role === 'admin';
+
   // Cargar autos desde backend, y refrescar cuando cambia token (login/logout)
   useEffect(() => {
     fetch('https://backend-98mt.onrender.com/api/cars')
@@ -25,7 +27,7 @@ function App() {
         console.error(err);
         setCars([]);
       });
-  }, [token]); // recarga autos cuando cambia token
+  }, [token]);
 
   // Navegación simple
   const handleNavigate = (page) => {
@@ -53,48 +55,48 @@ function App() {
         body: JSON.stringify(newCar),
       });
 
-      if (!res.ok) throw new Error('Error backend');
-      const savedCar = await res.json();
+      const data = await res.json();
 
-      setCars(prev => [...prev, savedCar]);
+      if (!res.ok) {
+        alert(data.error || 'Error al guardar el auto');
+        return;
+      }
 
-// Mostrar el nuevo auto inmediatamente
-if (currentPage !== 'rent') {
-  setCurrentPage('rent');
-}
-
+      alert('Vehículo guardado correctamente');
+      setCars(prev => [...prev, data]);
+      setCurrentPage('rent');
     } catch (err) {
       console.error(err);
-      alert('✅ Actualiza la pagina, para ver el vehiculo guardado');
+      alert('No se pudo guardar el auto (error de red o backend caído)');
     }
   };
 
   // Eliminar auto (solo admins)
-        const handleDeleteCar = async (carId) => {
-  try {
-    const res = await fetch(`https://backend-98mt.onrender.com/api/cars/${carId}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,  // token de usuario admin logueado
-      }
-    });
+  const handleDeleteCar = async (carId) => {
+    try {
+      const res = await fetch(`https://backend-98mt.onrender.com/api/cars/${carId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
 
-    if (!res.ok) {
       const data = await res.json();
-      alert(data.error || 'Error al eliminar vehículo');
-      return;
+
+      if (!res.ok) {
+        alert(data.error || 'Error al eliminar vehículo');
+        return;
+      }
+
+      setCars(prev => prev.filter(car => car.id !== carId));
+      alert('Vehículo eliminado correctamente');
+    } catch (err) {
+      console.error(err);
+      alert('Error al eliminar vehículo');
     }
+  };
 
-    setCars(prev => prev.filter(car => car.id !== carId));
-    alert('Vehículo eliminado correctamente');
-  } catch (err) {
-    console.error(err);
-    alert('Error al eliminar vehículo');
-  }
-};
-
-
-  // Login: guardar token y rol usando utils/auth.js
+  // Login
   const handleLogin = (newToken, newRole) => {
     setToken(newToken);
     setRole(newRole);
@@ -102,7 +104,7 @@ if (currentPage !== 'rent') {
     setCurrentPage('rent');
   };
 
-  // Logout: limpiar token y rol usando utils/auth.js
+  // Logout
   const handleLogout = () => {
     setToken(null);
     setRole(null);
@@ -110,9 +112,7 @@ if (currentPage !== 'rent') {
     setCurrentPage('home');
   };
 
-  const isAdmin = role === 'admin';
-
-  // Renderizar según autenticación
+  // Render si no está autenticado
   if (!token) {
     return (
       <div>
@@ -142,13 +142,12 @@ if (currentPage !== 'rent') {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
-       <LayoutHeader
-  onNavigate={handleNavigate}
-  onLogout={handleLogout}
-  isLoggedIn={token ? true : false}
-  userRole={role}
-/>
-
+      <LayoutHeader
+        onNavigate={handleNavigate}
+        onLogout={handleLogout}
+        isLoggedIn={true}
+        userRole={role}
+      />
 
       <main className="pt-16">
         {currentPage === 'home' && (
@@ -186,15 +185,13 @@ if (currentPage !== 'rent') {
         )}
 
         {currentPage === 'owner' && role === 'admin' ? (
-              <OwnerForm onAddCar={handleAddCar} />
-               ) : currentPage === 'owner' && (
-                (() => {
-              setCurrentPage('home');
-              return null;
-           })()
-          )}
-
-
+          <OwnerForm onAddCar={handleAddCar} />
+        ) : currentPage === 'owner' ? (
+          (() => {
+            setCurrentPage('home');
+            return null;
+          })()
+        ) : null}
       </main>
 
       {selectedCar && <CarDetailModal car={selectedCar} onClose={handleCloseModal} />}

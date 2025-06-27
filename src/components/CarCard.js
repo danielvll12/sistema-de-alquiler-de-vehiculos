@@ -22,7 +22,7 @@ const CarCard = ({ car, onSelectCar, onDeleteCar }) => {
         <div className="flex justify-between items-center">
           <span className="text-2xl font-bold text-gray-900">
             ${car.pricePerDay}
-            <span className="text-base font-normal text-gray-600">/semana</span>
+            <span className="text-base font-normal text-gray-600">/semanal</span>
           </span>
           <div className="flex gap-2">
             <button
