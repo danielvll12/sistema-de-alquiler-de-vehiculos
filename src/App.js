@@ -3,8 +3,7 @@ import LayoutHeader from './components/LayoutHeader';
 import CarListings from './components/CarListings';
 import CarDetailModal from './components/CarDetailModal';
 import OwnerForm from './components/OwnerForm';
-import RegisterForm from './components/RegisterForm';
-
+import Register from './components/RegisterForm';
 import Login from './components/Login';
 import { getToken, getUserRole, saveAuthData, clearAuthData } from './utils/auth';
 
@@ -13,12 +12,10 @@ function App() {
   const [cars, setCars] = useState([]);
   const [selectedCar, setSelectedCar] = useState(null);
 
-  // Estados para autenticación usando utils/auth.js
   const [token, setToken] = useState(getToken());
   const [role, setRole] = useState(getUserRole());
-  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
-  // Cargar autos desde backend, y refrescar cuando cambia token (login/logout)
+  // Cargar autos desde backend y recargar cuando cambia token (login/logout)
   useEffect(() => {
     fetch('https://backend-98mt.onrender.com/api/cars')
       .then(res => res.json())
@@ -27,9 +24,8 @@ function App() {
         console.error(err);
         setCars([]);
       });
-  }, [token]); // recarga autos cuando cambia token
+  }, [token]);
 
-  // Navegación simple
   const handleNavigate = (page) => {
     setCurrentPage(page);
     setSelectedCar(null);
@@ -43,12 +39,12 @@ function App() {
     setSelectedCar(null);
   };
 
-  // Agregar nuevo auto
+  // --- Aquí la función corregida para agregar vehículo ---
   const handleAddCar = async (newCar) => {
     try {
       const res = await fetch('https://backend-98mt.onrender.com/api/cars', {
         method: 'POST',
-        headers: {
+        headers: { 
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
@@ -63,7 +59,12 @@ function App() {
       }
 
       alert('Vehículo guardado correctamente');
-      setCars(prev => [...prev, data]);
+
+      // Recargar la lista completa desde backend para asegurar que UI se actualice
+      const carsRes = await fetch('https://backend-98mt.onrender.com/api/cars');
+      const carsData = await carsRes.json();
+      setCars(carsData);
+
       setCurrentPage('rent');
     } catch (err) {
       console.error(err);
@@ -71,7 +72,7 @@ function App() {
     }
   };
 
-  // Eliminar auto (solo admins)
+  // Función para eliminar vehículo (solo admin)
   const handleDeleteCar = async (carId) => {
     try {
       const res = await fetch(`https://backend-98mt.onrender.com/api/cars/${carId}`, {
@@ -87,6 +88,7 @@ function App() {
         return;
       }
 
+      // Actualizar lista sin el vehículo eliminado
       setCars(prev => prev.filter(car => car.id !== carId));
       alert('Vehículo eliminado correctamente');
     } catch (err) {
@@ -95,16 +97,13 @@ function App() {
     }
   };
 
-  // Login: guardar token y rol usando utils/auth.js
   const handleLogin = (newToken, newRole) => {
     setToken(newToken);
     setRole(newRole);
-    setRegistrationSuccess(false);
     saveAuthData(newToken, newRole);
     setCurrentPage('rent');
   };
 
-  // Logout: limpiar token y rol usando utils/auth.js
   const handleLogout = () => {
     setToken(null);
     setRole(null);
@@ -114,27 +113,12 @@ function App() {
 
   const isAdmin = role === 'admin';
 
-  // Renderizar según autenticación
   if (!token) {
     return (
       <div>
         <LayoutHeader onNavigate={handleNavigate} onLogout={handleLogout} isLoggedIn={false} />
-        {currentPage === 'login' && (
-          <div>
-            {registrationSuccess && (
-              <div className="bg-green-100 text-green-700 p-4 rounded mb-4 max-w-md mx-auto text-center">
-                ✅ Registro exitoso. Ahora puedes iniciar sesión.
-              </div>
-            )}
-            <Login onLogin={handleLogin} />
-          </div>
-        )}
-        {currentPage === 'register' && (
-  <RegisterForm onSuccess={() => setCurrentPage('login')} />
-)}
-
-          
-        
+        {currentPage === 'login' && <Login onLogin={handleLogin} />}
+        {currentPage === 'register' && <Register onRegister={() => setCurrentPage('login')} />}
         {(currentPage === 'home' || !['login', 'register'].includes(currentPage)) && (
           <div className="text-center mt-20">
             <h1 className="text-4xl font-bold mb-4">Bienvenido a CarRentSV</h1>
@@ -161,7 +145,7 @@ function App() {
       <LayoutHeader
         onNavigate={handleNavigate}
         onLogout={handleLogout}
-        isLoggedIn={token ? true : false}
+        isLoggedIn={!!token}
         userRole={role}
       />
 
@@ -193,10 +177,10 @@ function App() {
         )}
 
         {currentPage === 'rent' && (
-          <CarListings
-            cars={cars}
-            onSelectCar={handleSelectCar}
-            onDeleteCar={isAdmin ? handleDeleteCar : null}
+          <CarListings 
+            cars={cars} 
+            onSelectCar={handleSelectCar} 
+            onDeleteCar={isAdmin ? handleDeleteCar : null} 
           />
         )}
 
