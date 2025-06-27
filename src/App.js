@@ -65,33 +65,29 @@ function App() {
   };
 
   // Eliminar auto (solo admins)
-  const handleDeleteCar = async (carId) => {
-    if (!token) {
-      alert('Debes iniciar sesión como administrador para eliminar autos');
+        const handleDeleteCar = async (carId) => {
+  try {
+    const res = await fetch(`https://backend-98mt.onrender.com/api/cars/${carId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,  // token de usuario admin logueado
+      }
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      alert(data.error || 'Error al eliminar vehículo');
       return;
     }
 
-    try {
-      const res = await fetch(`https://backend-98mt.onrender.com/api/cars/${carId}`, {
-        method: 'DELETE',
-        headers: { 
-          Authorization: `Bearer ${token}`
-        }
-      });
+    setCars(prev => prev.filter(car => car.id !== carId));
+    alert('Vehículo eliminado correctamente');
+  } catch (err) {
+    console.error(err);
+    alert('Error al eliminar vehículo');
+  }
+};
 
-      if (!res.ok) {
-        const data = await res.json();
-        alert(data.error || 'Error al eliminar vehículo');
-        return;
-      }
-
-      setCars(prev => prev.filter(car => car.id !== carId));
-      alert('Vehículo eliminado correctamente');
-    } catch (err) {
-      console.error(err);
-      alert('Error al eliminar vehículo');
-    }
-  };
 
   // Login: guardar token y rol usando utils/auth.js
   const handleLogin = (newToken, newRole) => {
