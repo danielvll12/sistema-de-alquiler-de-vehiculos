@@ -1,3 +1,4 @@
+// RegisterForm.js
 import React, { useState } from 'react';
 
 const RegisterForm = ({ onSuccess }) => {
@@ -32,7 +33,9 @@ const RegisterForm = ({ onSuccess }) => {
       setSuccess('Registro exitoso. Ahora puedes iniciar sesión.');
       setForm({ email: '', password: '', role: 'user' });
 
-      if (onSuccess) onSuccess(); // Callback opcional
+      setTimeout(() => {
+        if (onSuccess) onSuccess();
+      }, 1500);
     } catch (err) {
       setError(err.message);
     }
