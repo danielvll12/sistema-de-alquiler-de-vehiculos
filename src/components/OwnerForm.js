@@ -1,7 +1,4 @@
 import React, { useState } from 'react';
-import { getToken } from '../utils/auth';
-
-
 
 const OwnerForm = ({ onAddCar }) => {
   const [carData, setCarData] = useState({
@@ -39,21 +36,21 @@ const OwnerForm = ({ onAddCar }) => {
     }
   };
 
-     const sendCarToBackend = async (newCar) => {
-  const token = getToken(); // obtener el token del localStorage
+  const sendCarToBackend = async (newCar) => {
+    const token = localStorage.getItem('token'); // Obtenemos el token del login
 
-  const response = await fetch('https://backend-98mt.onrender.com/api/cars', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(newCar),
-  });
-  
+    const response = await fetch('https://backend-98mt.onrender.com/api/cars', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Enviamos el token para autenticar
+      },
+      body: JSON.stringify(newCar),
+    });
 
     if (!response.ok) {
-      throw new Error('Error al guardar el vehículo en el servidor');
+      const error = await response.json();
+      throw new Error(error.error || 'Error al guardar el vehículo');
     }
 
     return response.json();
@@ -64,8 +61,6 @@ const OwnerForm = ({ onAddCar }) => {
 
     const newCar = {
       id: String(Date.now()),
-      ownerId: localStorage.getItem('userId'), // ← ✅ ID real del usuario logueado
-
       brand: carData.brand,
       model: carData.model,
       year: parseInt(carData.year),
@@ -76,6 +71,7 @@ const OwnerForm = ({ onAddCar }) => {
       features: carData.features.split(',').map((f) => f.trim()),
       startDate: carData.startDate,
       phoneNumber: carData.phoneNumber,
+      // ownerId se asigna en el backend usando el token
     };
 
     try {
@@ -93,15 +89,16 @@ const OwnerForm = ({ onAddCar }) => {
         startDate: '',
         phoneNumber: '',
       });
-      alert('¡Vehículo publicado con éxito!');
+      alert('✅ ¡Vehículo publicado con éxito!');
     } catch (error) {
       console.error(error);
-      alert('❌ Error al guardar en el servidor');
+      alert(`❌ ${error.message}`);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto p-6 bg-white rounded-2xl shadow-lg">
+      {/* Campos de entrada */}
       <div>
         <label htmlFor="brand" className="block text-gray-700 font-medium mb-2">Marca</label>
         <input type="text" id="brand" name="brand" value={carData.brand} onChange={handleChange}
