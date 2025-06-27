@@ -7,6 +7,76 @@ import RegisterForm from './components/RegisterForm'; // Asegúrate de usar este
 import Login from './components/Login';
 import { getToken, getUserRole, saveAuthData, clearAuthData } from './utils/auth';
 
+function FeedbackForm() {
+  const [email, setEmail] = useState('');
+  const [comment, setComment] = useState('');
+  const [status, setStatus] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('Enviando...');
+
+    try {
+      // Aquí debes poner la URL de tu backend que envíe el correo
+      const res = await fetch('https://tu-backend-para-enviar-correo.com/api/feedback', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, comment }),
+      });
+
+      if (!res.ok) throw new Error('Error al enviar el feedback.');
+
+      setStatus('¡Gracias por tu comentario!');
+      setEmail('');
+      setComment('');
+    } catch (error) {
+      setStatus('Error enviando el comentario. Intenta de nuevo.');
+      console.error(error);
+    }
+  };
+
+  return (
+    <section className="max-w-md mx-auto mt-12 p-6 bg-white rounded shadow-md">
+      <h3 className="text-2xl font-semibold mb-4 text-gray-900">Envíanos tu feedback</h3>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block mb-1 text-gray-700" htmlFor="email">Correo electrónico:</label>
+          <input
+            id="email"
+            type="email"
+            required
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+            placeholder="tuemail@ejemplo.com"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-1 text-gray-700" htmlFor="comment">Comentario:</label>
+          <textarea
+            id="comment"
+            required
+            value={comment}
+            onChange={e => setComment(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+            rows="4"
+            placeholder="Escribe tu comentario aquí"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Enviar
+        </button>
+        {status && <p className="mt-2 text-sm text-gray-700">{status}</p>}
+      </form>
+    </section>
+  );
+}
+
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [cars, setCars] = useState([]);
@@ -188,6 +258,9 @@ function App() {
       </main>
 
       {selectedCar && <CarDetailModal car={selectedCar} onClose={handleCloseModal} />}
+
+      {/* Formulario de Feedback */}
+      <FeedbackForm />
     </div>
   );
 }
