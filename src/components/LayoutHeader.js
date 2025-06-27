@@ -34,12 +34,15 @@ const LayoutHeader = ({ onNavigate, onLogout, isLoggedIn }) => {
           >
             Rentar un Vehículo
           </button>
-          <button
-            onClick={() => handleNavigate('owner')}
-            className="text-gray-600 hover:text-gray-900 transition-colors text-lg font-medium"
-          >
-            Publicar mi Vehículo
-          </button>
+       {userRole === 'admin' && (
+  <button
+    onClick={() => onNavigate('owner')}
+    className="text-white px-4 py-2 hover:text-yellow-300"
+  >
+    Publicar Vehículo
+  </button>
+)}
+
 
           {/* BOTÓN CERRAR SESIÓN - Solo si está logueado */}
           {isLoggedIn && (

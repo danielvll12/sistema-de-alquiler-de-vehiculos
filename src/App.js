@@ -142,7 +142,13 @@ if (currentPage !== 'rent') {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
-      <LayoutHeader onNavigate={handleNavigate} onLogout={handleLogout} isLoggedIn={true} />
+     <LayoutHeader 
+  onNavigate={handleNavigate} 
+  onLogout={handleLogout} 
+  isLoggedIn={true} 
+  userRole={role} 
+/>
+
 
       <main className="pt-16">
         {currentPage === 'home' && (
@@ -179,7 +185,16 @@ if (currentPage !== 'rent') {
           />
         )}
 
-        {currentPage === 'owner' && <OwnerForm onAddCar={handleAddCar} />}
+        {currentPage === 'owner' && role === 'admin' ? (
+              <OwnerForm onAddCar={handleAddCar} />
+               ) : currentPage === 'owner' && (
+                (() => {
+              setCurrentPage('home');
+              return null;
+           })()
+          )}
+
+
       </main>
 
       {selectedCar && <CarDetailModal car={selectedCar} onClose={handleCloseModal} />}
