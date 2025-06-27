@@ -3,7 +3,8 @@ import LayoutHeader from './components/LayoutHeader';
 import CarListings from './components/CarListings';
 import CarDetailModal from './components/CarDetailModal';
 import OwnerForm from './components/OwnerForm';
-import Register from './components/RegisterForm';
+import RegisterForm from './components/RegisterForm';
+
 import Login from './components/Login';
 import { getToken, getUserRole, saveAuthData, clearAuthData } from './utils/auth';
 
@@ -129,13 +130,11 @@ function App() {
           </div>
         )}
         {currentPage === 'register' && (
-          <Register
-            onRegister={() => {
-              setRegistrationSuccess(true);
-              setCurrentPage('login');
-            }}
-          />
-        )}
+  <RegisterForm onSuccess={() => setCurrentPage('login')} />
+)}
+
+          
+        
         {(currentPage === 'home' || !['login', 'register'].includes(currentPage)) && (
           <div className="text-center mt-20">
             <h1 className="text-4xl font-bold mb-4">Bienvenido a CarRentSV</h1>
