@@ -59,7 +59,8 @@ const OwnerForm = ({ onAddCar }) => {
 
     const newCar = {
       id: String(Date.now()),
-      ownerId: 'ownerX',
+      ownerId: localStorage.getItem('userId'), // ← ✅ ID real del usuario logueado
+
       brand: carData.brand,
       model: carData.model,
       year: parseInt(carData.year),
