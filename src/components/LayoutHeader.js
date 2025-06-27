@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
-const LayoutHeader = ({ onNavigate, onLogout, isLoggedIn }) => {
+const LayoutHeader = ({ onNavigate, onLogout, isLoggedIn, userRole }) => {
+
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);

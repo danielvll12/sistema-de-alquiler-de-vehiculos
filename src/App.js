@@ -142,11 +142,11 @@ if (currentPage !== 'rent') {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
-     <LayoutHeader 
-  onNavigate={handleNavigate} 
-  onLogout={handleLogout} 
-  isLoggedIn={true} 
-  userRole={role} 
+       <LayoutHeader
+  onNavigate={handleNavigate}
+  onLogout={handleLogout}
+  isLoggedIn={token ? true : false}
+  userRole={role}
 />
 
 
