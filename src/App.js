@@ -3,7 +3,7 @@ import LayoutHeader from './components/LayoutHeader';
 import CarListings from './components/CarListings';
 import CarDetailModal from './components/CarDetailModal';
 import OwnerForm from './components/OwnerForm';
-import Register from './components/RegisterForm';
+import RegisterForm from './components/RegisterForm'; // Asegúrate de usar este nombre
 import Login from './components/Login';
 import { getToken, getUserRole, saveAuthData, clearAuthData } from './utils/auth';
 
@@ -12,11 +12,9 @@ function App() {
   const [cars, setCars] = useState([]);
   const [selectedCar, setSelectedCar] = useState(null);
 
-  // Estados para autenticación usando utils/auth.js
   const [token, setToken] = useState(getToken());
   const [role, setRole] = useState(getUserRole());
 
-  // Cargar autos desde backend, y refrescar cuando cambia token (login/logout)
   useEffect(() => {
     fetch('https://backend-98mt.onrender.com/api/cars')
       .then(res => res.json())
@@ -25,9 +23,8 @@ function App() {
         console.error(err);
         setCars([]);
       });
-  }, [token]); // recarga autos cuando cambia token
+  }, [token]);
 
-  // Navegación simple
   const handleNavigate = (page) => {
     setCurrentPage(page);
     setSelectedCar(null);
@@ -41,7 +38,6 @@ function App() {
     setSelectedCar(null);
   };
 
-  // Agregar nuevo auto
   const handleAddCar = async (newCar) => {
     try {
       const res = await fetch('https://backend-98mt.onrender.com/api/cars', {
@@ -69,13 +65,12 @@ function App() {
     }
   };
 
-  // Eliminar auto (solo admins)
   const handleDeleteCar = async (carId) => {
     try {
       const res = await fetch(`https://backend-98mt.onrender.com/api/cars/${carId}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${token}`,  // token de usuario admin logueado
+          Authorization: `Bearer ${token}`,
         }
       });
 
@@ -93,7 +88,6 @@ function App() {
     }
   };
 
-  // Login: guardar token y rol usando utils/auth.js
   const handleLogin = (newToken, newRole) => {
     setToken(newToken);
     setRole(newRole);
@@ -101,7 +95,6 @@ function App() {
     setCurrentPage('rent');
   };
 
-  // Logout: limpiar token y rol usando utils/auth.js
   const handleLogout = () => {
     setToken(null);
     setRole(null);
@@ -111,13 +104,14 @@ function App() {
 
   const isAdmin = role === 'admin';
 
-  // Renderizar según autenticación
   if (!token) {
     return (
       <div>
         <LayoutHeader onNavigate={handleNavigate} onLogout={handleLogout} isLoggedIn={false} />
         {currentPage === 'login' && <Login onLogin={handleLogin} />}
-        {currentPage === 'register' && <Register onSuccess={() => setCurrentPage('login')} />}
+        {currentPage === 'register' && (
+          <RegisterForm onSuccess={() => setCurrentPage('login')} />
+        )}
         {(currentPage === 'home' || !['login', 'register'].includes(currentPage)) && (
           <div className="text-center mt-20">
             <h1 className="text-4xl font-bold mb-4">Bienvenido a CarRentSV</h1>
@@ -176,10 +170,10 @@ function App() {
         )}
 
         {currentPage === 'rent' && (
-          <CarListings 
-            cars={cars} 
-            onSelectCar={handleSelectCar} 
-            onDeleteCar={isAdmin ? handleDeleteCar : null} 
+          <CarListings
+            cars={cars}
+            onSelectCar={handleSelectCar}
+            onDeleteCar={isAdmin ? handleDeleteCar : null}
           />
         )}
 
@@ -191,7 +185,6 @@ function App() {
             return null;
           })()
         )}
-
       </main>
 
       {selectedCar && <CarDetailModal car={selectedCar} onClose={handleCloseModal} />}
