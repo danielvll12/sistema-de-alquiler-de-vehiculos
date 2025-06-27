@@ -1,5 +1,4 @@
-// RegisterForm.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const RegisterForm = ({ onSuccess }) => {
   const [form, setForm] = useState({
@@ -30,12 +29,13 @@ const RegisterForm = ({ onSuccess }) => {
 
       if (!res.ok) throw new Error(data.error || 'Error al registrar');
 
-      setSuccess('Registro exitoso. Ahora puedes iniciar sesión.');
+      setSuccess('Registro exitoso. Redirigiendo al inicio de sesión...');
       setForm({ email: '', password: '', role: 'user' });
 
+      // Redirigir al login luego de 2 segundos
       setTimeout(() => {
         if (onSuccess) onSuccess();
-      }, 1500);
+      }, 2000);
     } catch (err) {
       setError(err.message);
     }
