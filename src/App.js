@@ -116,7 +116,7 @@ function App() {
         )}
         {(currentPage === 'home' || !['login', 'register'].includes(currentPage)) && (
           <div className="text-center mt-20">
-            <h1 className="text-4xl font-bold mb-4">Bienvenido a CarRentSV</h1>
+            <h1 className="text-4xl font-bold mb-4">Bienvenido a AutoRápidoSV</h1>
             <button
               onClick={() => setCurrentPage('login')}
               className="bg-blue-600 text-white px-6 py-3 rounded-md"

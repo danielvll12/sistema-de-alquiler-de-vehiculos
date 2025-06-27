@@ -46,7 +46,7 @@ const CarDetailModal = ({ car, onClose }) => {
                 {car.location}
               </p>
              <p className="text-gray-600 text-lg mb-2">
-            <span className="font-semibold text-gray-800">Precio:</span> ${car.pricePerDay}/semana
+            <span className="font-semibold text-gray-800">Precio:</span> ${car.pricePerDay}/semanal
                 </p>
 
               <p className="text-gray-600 text-lg mb-2">
