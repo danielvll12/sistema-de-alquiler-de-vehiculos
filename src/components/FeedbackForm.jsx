@@ -1,33 +1,37 @@
+// src/components/FeedbackForm.jsx
 import React, { useState } from 'react';
-import emailjs from '@emailjs/browser';
 
-function FeedbackForm() {
+const FeedbackForm = () => {
   const [email, setEmail] = useState('');
   const [comment, setComment] = useState('');
   const [status, setStatus] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('Enviando...');
 
-    const serviceID = 'service_g1yvxkm';       // Cambia aquí
-    const templateID = 'template_53dg31h';     // Cambia aquí
-    const userID = 'HqHyGQrkK3jsw1Ziz';             // Cambia aquí
-
-    const templateParams = {
-      from_email: email,
-      message: comment,
-    };
-
-    emailjs.send(serviceID, templateID, templateParams, userID)
-      .then(() => {
-        setStatus('¡Gracias por tu comentario!');
-        setEmail('');
-        setComment('');
-      }, (err) => {
-        console.error(err);
-        setStatus('Error enviando el comentario. Intenta de nuevo.');
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/danielvallec98@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify({
+          email,
+          comment
+        })
       });
+
+      if (!res.ok) throw new Error('Error al enviar el feedback.');
+
+      setStatus('¡Gracias por tu comentario!');
+      setEmail('');
+      setComment('');
+    } catch (error) {
+      console.error(error);
+      setStatus('Error enviando el comentario. Intenta de nuevo.');
+    }
   };
 
   return (
@@ -35,7 +39,7 @@ function FeedbackForm() {
       <h3 className="text-2xl font-semibold mb-4 text-gray-900">Envíanos tu feedback</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block mb-1 text-gray-700" htmlFor="email">Correo electrónico:</label>
+          <label htmlFor="email" className="block mb-1 text-gray-700">Correo electrónico:</label>
           <input
             id="email"
             type="email"
@@ -48,7 +52,7 @@ function FeedbackForm() {
         </div>
 
         <div>
-          <label className="block mb-1 text-gray-700" htmlFor="comment">Comentario:</label>
+          <label htmlFor="comment" className="block mb-1 text-gray-700">Comentario:</label>
           <textarea
             id="comment"
             required
@@ -70,6 +74,6 @@ function FeedbackForm() {
       </form>
     </section>
   );
-}
+};
 
 export default FeedbackForm;

@@ -3,10 +3,11 @@ import LayoutHeader from './components/LayoutHeader';
 import CarListings from './components/CarListings';
 import CarDetailModal from './components/CarDetailModal';
 import OwnerForm from './components/OwnerForm';
-import RegisterForm from './components/RegisterForm';
+import RegisterForm from './components/RegisterForm'; // Asegúrate de usar este nombre
 import Login from './components/Login';
-import FeedbackForm from './components/FeedbackForm'; // Importa el componente de feedback
+import FeedbackForm from './components/FeedbackForm';
 import { getToken, getUserRole, saveAuthData, clearAuthData } from './utils/auth';
+
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -186,13 +187,14 @@ function App() {
             return null;
           })()
         )}
-
-        {/* Aquí agregamos el formulario de feedback */}
         <FeedbackForm />
 
       </main>
 
       {selectedCar && <CarDetailModal car={selectedCar} onClose={handleCloseModal} />}
+
+      
+
     </div>
   );
 }
