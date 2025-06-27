@@ -12,10 +12,11 @@ function App() {
   const [cars, setCars] = useState([]);
   const [selectedCar, setSelectedCar] = useState(null);
 
+  // Estados para autenticación usando utils/auth.js
   const [token, setToken] = useState(getToken());
   const [role, setRole] = useState(getUserRole());
 
-  // Cargar autos desde backend y recargar cuando cambia token (login/logout)
+  // Cargar autos desde backend, y refrescar cuando cambia token (login/logout)
   useEffect(() => {
     fetch('https://backend-98mt.onrender.com/api/cars')
       .then(res => res.json())
@@ -24,8 +25,9 @@ function App() {
         console.error(err);
         setCars([]);
       });
-  }, [token]);
+  }, [token]); // recarga autos cuando cambia token
 
+  // Navegación simple
   const handleNavigate = (page) => {
     setCurrentPage(page);
     setSelectedCar(null);
@@ -39,7 +41,7 @@ function App() {
     setSelectedCar(null);
   };
 
-  // --- Aquí la función corregida para agregar vehículo ---
+  // Agregar nuevo auto
   const handleAddCar = async (newCar) => {
     try {
       const res = await fetch('https://backend-98mt.onrender.com/api/cars', {
@@ -59,12 +61,7 @@ function App() {
       }
 
       alert('Vehículo guardado correctamente');
-
-      // Recargar la lista completa desde backend para asegurar que UI se actualice
-      const carsRes = await fetch('https://backend-98mt.onrender.com/api/cars');
-      const carsData = await carsRes.json();
-      setCars(carsData);
-
+      setCars(prev => [...prev, data]);
       setCurrentPage('rent');
     } catch (err) {
       console.error(err);
@@ -72,13 +69,13 @@ function App() {
     }
   };
 
-  // Función para eliminar vehículo (solo admin)
+  // Eliminar auto (solo admins)
   const handleDeleteCar = async (carId) => {
     try {
       const res = await fetch(`https://backend-98mt.onrender.com/api/cars/${carId}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,  // token de usuario admin logueado
         }
       });
 
@@ -88,7 +85,6 @@ function App() {
         return;
       }
 
-      // Actualizar lista sin el vehículo eliminado
       setCars(prev => prev.filter(car => car.id !== carId));
       alert('Vehículo eliminado correctamente');
     } catch (err) {
@@ -97,6 +93,7 @@ function App() {
     }
   };
 
+  // Login: guardar token y rol usando utils/auth.js
   const handleLogin = (newToken, newRole) => {
     setToken(newToken);
     setRole(newRole);
@@ -104,6 +101,7 @@ function App() {
     setCurrentPage('rent');
   };
 
+  // Logout: limpiar token y rol usando utils/auth.js
   const handleLogout = () => {
     setToken(null);
     setRole(null);
@@ -113,12 +111,13 @@ function App() {
 
   const isAdmin = role === 'admin';
 
+  // Renderizar según autenticación
   if (!token) {
     return (
       <div>
         <LayoutHeader onNavigate={handleNavigate} onLogout={handleLogout} isLoggedIn={false} />
         {currentPage === 'login' && <Login onLogin={handleLogin} />}
-        {currentPage === 'register' && <Register onRegister={() => setCurrentPage('login')} />}
+        {currentPage === 'register' && <Register onSuccess={() => setCurrentPage('login')} />}
         {(currentPage === 'home' || !['login', 'register'].includes(currentPage)) && (
           <div className="text-center mt-20">
             <h1 className="text-4xl font-bold mb-4">Bienvenido a CarRentSV</h1>
@@ -192,6 +191,7 @@ function App() {
             return null;
           })()
         )}
+
       </main>
 
       {selectedCar && <CarDetailModal car={selectedCar} onClose={handleCloseModal} />}

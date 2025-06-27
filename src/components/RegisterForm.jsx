@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const RegisterForm = ({ onSuccess }) => {
   const [form, setForm] = useState({
@@ -29,13 +29,10 @@ const RegisterForm = ({ onSuccess }) => {
 
       if (!res.ok) throw new Error(data.error || 'Error al registrar');
 
-      setSuccess('Registro exitoso. Redirigiendo al inicio de sesión...');
+      setSuccess('Registro exitoso. Ahora serás redirigido al inicio de sesión.');
       setForm({ email: '', password: '', role: 'user' });
 
-      // Redirigir al login luego de 2 segundos
-      setTimeout(() => {
-        if (onSuccess) onSuccess();
-      }, 2000);
+      if (onSuccess) onSuccess(); // Notificamos al padre para redirigir a login
     } catch (err) {
       setError(err.message);
     }
