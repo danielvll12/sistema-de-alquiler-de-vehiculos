@@ -18,7 +18,7 @@ const LayoutHeader = ({ onNavigate, onLogout, isLoggedIn, userRole }) => {
           className="text-2xl font-bold text-gray-900 cursor-pointer"
           onClick={() => handleNavigate('home')}
         >
-          CarRentSv
+          AutoRápidoSV
         </h1>
 
         {/* Menú escritorio */}
