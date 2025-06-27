@@ -57,7 +57,12 @@ function App() {
       const savedCar = await res.json();
 
       setCars(prev => [...prev, savedCar]);
-      setCurrentPage('rent');
+
+// Mostrar el nuevo auto inmediatamente
+if (currentPage !== 'rent') {
+  setCurrentPage('rent');
+}
+
     } catch (err) {
       console.error(err);
       alert('No se pudo guardar el auto');
