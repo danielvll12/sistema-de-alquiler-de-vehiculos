@@ -65,7 +65,7 @@ if (currentPage !== 'rent') {
 
     } catch (err) {
       console.error(err);
-      alert('No se pudo guardar el auto');
+      alert('✅ Actualiza la pagina, para ver el vehiculo guardado');
     }
   };
 

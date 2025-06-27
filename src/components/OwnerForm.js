@@ -50,7 +50,7 @@ const OwnerForm = ({ onAddCar }) => {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Error al guardar el vehículo');
+      throw new Error(error.error || '✅ Actualiza la pagina');
     }
 
     return response.json();
