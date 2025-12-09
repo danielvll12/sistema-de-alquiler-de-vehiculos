@@ -7,7 +7,7 @@ const OwnerForm = ({ onAddCar }) => {
     year: '',
     pricePerDay: '',
     location: '',
-    imageUrl: '',
+    images: [], 
     description: '',
     features: '',
     startDate: '',
@@ -16,44 +16,49 @@ const OwnerForm = ({ onAddCar }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setCarData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setCarData(prev => ({ ...prev, [name]: value }));
   };
 
+  /** 📌 SUBIR MÚLTIPLES IMÁGENES **/
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
+    const files = Array.from(e.target.files);
+
+    files.forEach(file => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setCarData((prevData) => ({
-          ...prevData,
-          imageUrl: reader.result,
+        setCarData(prev => ({
+          ...prev,
+          images: [...prev.images, reader.result] //⬅ Se agregan todas
         }));
       };
       reader.readAsDataURL(file);
-    }
+    });
   };
 
-  const sendCarToBackend = async (newCar) => {
-    const token = localStorage.getItem('token'); // Obtenemos el token del login
+  /** ❌ ELIMINAR IMAGEN POR CLICK EN LA X **/
+  const removeImage = (index) => {
+    setCarData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
 
-    const response = await fetch('https://backend-98mt.onrender.com/api/cars', {
+  /** 📤 Enviar al backend */
+  const sendCarToBackend = async (newCar) => {
+    const token = localStorage.getItem('token');
+
+    const res = await fetch('https://backend-98mt.onrender.com/api/cars', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` // Enviamos el token para autenticar
-      },
-      body: JSON.stringify(newCar),
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(newCar)
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || '✅ Actualiza la pagina');
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || "Error al guardar");
     }
 
-    return response.json();
+    return res.json();
   };
 
   const handleSubmit = async (e) => {
@@ -61,111 +66,124 @@ const OwnerForm = ({ onAddCar }) => {
 
     const newCar = {
       id: String(Date.now()),
-      brand: carData.brand,
-      model: carData.model,
+      ...carData,
       year: parseInt(carData.year),
       pricePerDay: parseFloat(carData.pricePerDay),
-      location: carData.location,
-      imageUrl: carData.imageUrl,
-      description: carData.description,
-      features: carData.features.split(',').map((f) => f.trim()),
-      startDate: carData.startDate,
-      phoneNumber: carData.phoneNumber,
-      // ownerId se asigna en el backend usando el token
+      features: carData.features.split(',').map(f => f.trim()),
     };
 
     try {
       await sendCarToBackend(newCar);
       onAddCar(newCar);
+      alert("🚗 Vehículo publicado exitosamente 🙌");
+
       setCarData({
         brand: '',
         model: '',
         year: '',
         pricePerDay: '',
         location: '',
-        imageUrl: '',
+        images: [],
         description: '',
         features: '',
         startDate: '',
         phoneNumber: '',
       });
-      alert('✅ ¡Vehículo publicado con éxito!');
+
     } catch (error) {
-      console.error(error);
       alert(`❌ ${error.message}`);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto p-6 bg-white rounded-2xl shadow-lg">
-      {/* Campos de entrada */}
-      <div>
-        <label htmlFor="brand" className="block text-gray-700 font-medium mb-2">Marca</label>
-        <input type="text" id="brand" name="brand" value={carData.brand} onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
-      </div>
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
 
-      <div>
-        <label htmlFor="model" className="block text-gray-700 font-medium mb-2">Modelo</label>
-        <input type="text" id="model" name="model" value={carData.model} onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
-      </div>
+      {/* Fondo */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center opacity-60"
+        style={{ backgroundImage:"url('https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg')" }}
+      ></div>
 
-      <div>
-        <label htmlFor="year" className="block text-gray-700 font-medium mb-2">Año</label>
-        <input type="number" id="year" name="year" value={carData.year} onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
-      </div>
+      <form 
+        onSubmit={handleSubmit}
+        className="relative z-10 w-[90%] md:w-[50%] lg:w-[40%] p-10
+        bg-white/10 backdrop-blur-xl border border-white/30 shadow-2xl rounded-2xl text-white space-y-5"
+      >
+        <h2 className="text-4xl font-extrabold text-center drop-shadow mb-4">
+          🚘 Publicar nuevo vehículo
+        </h2>
 
-      <div>
-        <label htmlFor="pricePerDay" className="block text-gray-700 font-medium mb-2">Precio por Semana ($)</label>
-        <input type="number" id="pricePerDay" name="pricePerDay" value={carData.pricePerDay} onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
-      </div>
+        {[
+          {id:'brand',label:'Marca'},
+          {id:'model',label:'Modelo'},
+          {id:'year',label:'Año',type:'number'},
+          {id:'pricePerDay',label:'Precio por Semana ($)',type:'number'},
+          {id:'location',label:'Ubicación'},
+          {id:'phoneNumber',label:'Teléfono'},
+          {id:'startDate',label:'Disponible desde',type:'date'},
+        ].map(f=>(
+          <div key={f.id}>
+            <label className="block mb-1 font-semibold">{f.label}</label>
+            <input 
+              type={f.type||'text'} name={f.id} value={carData[f.id]} onChange={handleChange}
+              className="w-full px-4 py-3 rounded-lg bg-white/20 text-white outline-none border border-white/40 focus:border-yellow-300"
+              required
+            />
+          </div>
+        ))}
 
-      <div>
-        <label htmlFor="location" className="block text-gray-700 font-medium mb-2">Ubicación</label>
-        <input type="text" id="location" name="location" value={carData.location} onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
-      </div>
+        {/* 📌 IMÁGENES */}
+        <div>
+          <label className="block font-semibold mb-1">Fotos del Vehículo</label>
+          <input type="file" accept="image/*" multiple onChange={handleImageChange}
+            className="text-white w-full py-2 cursor-pointer"
+          />
 
-      <div>
-        <label htmlFor="imageUpload" className="block text-gray-700 font-medium mb-2">Foto del Vehículo</label>
-        <input type="file" id="imageUpload" name="imageUpload" accept="image/*" onChange={handleImageChange}
-          className="w-full" required />
-        {carData.imageUrl && (
-          <img src={carData.imageUrl} alt="Vista previa" className="mt-4 max-h-48 rounded-lg object-cover shadow-md" />
-        )}
-      </div>
+          {/* Vista con eliminar X */}
+          {carData.images.length > 0 && (
+            <div className="flex gap-3 mt-3 overflow-x-auto">
+              {carData.images.map((img, i) => (
+                <div key={i} className="relative group">
+                  
+                  {/* Miniatura */}
+                  <img src={img} className="h-20 w-20 object-cover rounded-xl shadow-md" />
 
-      <div>
-        <label htmlFor="description" className="block text-gray-700 font-medium mb-2">Descripción</label>
-        <textarea id="description" name="description" value={carData.description} onChange={handleChange}
-          rows="4" className="w-full px-4 py-3 border border-gray-300 rounded-xl resize-none" required></textarea>
-      </div>
+                  {/* ❌ Botón para eliminar */}
+                  <button
+                    onClick={() => removeImage(i)}
+                    className="absolute top-1 right-1 bg-black/70 hover:bg-red-600 
+                               text-white rounded-full w-6 h-6 flex items-center 
+                               justify-center text-xs font-bold opacity-90"
+                  >
+                    ✕
+                  </button>
 
-      <div>
-        <label htmlFor="features" className="block text-gray-700 font-medium mb-2">Características (coma separadas)</label>
-        <input type="text" id="features" name="features" value={carData.features} onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
-      </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-      <div>
-        <label htmlFor="phoneNumber" className="block text-gray-700 font-medium mb-2">Teléfono</label>
-        <input type="tel" id="phoneNumber" name="phoneNumber" value={carData.phoneNumber} onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
-      </div>
+        <div>
+          <label className="block font-semibold mb-1">Descripción</label>
+          <textarea name="description" value={carData.description} onChange={handleChange} rows="3"
+            className="w-full px-4 py-3 rounded-lg bg-white/20 text-white border border-white/40 focus:border-yellow-300 resize-none"
+            required></textarea>
+        </div>
 
-      <div>
-        <label htmlFor="startDate" className="block text-gray-700 font-medium mb-2">Disponible desde</label>
-        <input type="date" id="startDate" name="startDate" value={carData.startDate} onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl" required />
-      </div>
+        <div>
+          <label className="block font-semibold mb-1">Características (coma separadas)</label>
+          <input name="features" value={carData.features} onChange={handleChange}
+            className="w-full px-4 py-3 rounded-lg bg-white/20 text-white border border-white/40 focus:border-yellow-300" required
+          />
+        </div>
 
-      <button type="submit" className="w-full bg-gray-900 text-white py-3 rounded-xl hover:bg-gray-700 text-xl font-semibold shadow-lg">
-        Publicar Vehículo
-      </button>
-    </form>
+        <button className="w-full py-3 rounded-xl text-xl font-bold 
+        bg-gradient-to-r from-blue-500 to-blue-700 hover:scale-105 duration-200 shadow-xl">
+          🚀 Publicar Vehículo
+        </button>
+      </form>
+    </div>
   );
 };
 

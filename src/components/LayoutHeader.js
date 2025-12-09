@@ -1,143 +1,106 @@
 import React, { useState } from 'react';
 
 const LayoutHeader = ({ onNavigate, onLogout, isLoggedIn, userRole }) => {
-
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
   const handleNavigate = (page) => {
     onNavigate(page);
-    setMenuOpen(false); // cierra menú al navegar
+    setMenuOpen(false);
   };
 
   return (
-    <header className="w-full bg-white shadow-sm fixed top-0 left-0 z-50">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <header className="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur shadow-md border-b border-gray-200">
+      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+        
+        {/* LOGO TITULO CON EFECTO */}
         <h1
-          className="text-2xl font-bold text-gray-900 cursor-pointer"
           onClick={() => handleNavigate('home')}
+          className="text-3xl font-extrabold bg-gradient-to-r from-blue-700 to-blue-400 bg-clip-text text-transparent cursor-pointer hover:scale-105 transition transform"
         >
           AutoRápidoSV
         </h1>
 
-        {/* Menú escritorio */}
-        <nav className="hidden md:flex space-x-6 items-center">
-          <button
+        {/* MENU ESCRITORIO */}
+        <nav className="hidden md:flex items-center gap-6">
+          <button 
             onClick={() => handleNavigate('home')}
-            className="text-gray-600 hover:text-gray-900 transition-colors text-lg font-medium"
+            className="text-gray-700 hover:text-blue-600 transition font-semibold"
           >
             Inicio
           </button>
-          <button
+
+          <button 
             onClick={() => handleNavigate('rent')}
-            className="text-gray-600 hover:text-gray-900 transition-colors text-lg font-medium"
+            className="text-gray-700 hover:text-blue-600 transition font-semibold"
           >
-            Rentar un Vehículo
+            Rentar Vehículo
           </button>
-       {userRole === 'admin' && (
-  <button
-    onClick={() => onNavigate('owner')}
-    className="text-white px-4 py-2 hover:text-yellow-300"
-  >
-    Publicar Vehículo
-  </button>
-)}
 
+          {/* SOLO ADMIN PUEDE PUBLICAR */}
+          {userRole === "admin" && (
+            <button 
+              onClick={() => handleNavigate('owner')}
+              className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-md transition"
+            >
+              Publicar Vehículo
+            </button>
+          )}
 
-          {/* BOTÓN CERRAR SESIÓN - Solo si está logueado */}
+          {/* CERRAR SESION */}
           {isLoggedIn && (
-            <button
-              onClick={() => {
-                onLogout();
-                setMenuOpen(false);
-              }}
-              className="ml-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition"
+            <button 
+              onClick={onLogout}
+              className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition"
             >
               Cerrar Sesión
             </button>
           )}
         </nav>
 
-        {/* Botón hamburguesa móvil */}
-        <div className="md:hidden flex items-center gap-4">
-          {/* Si está logueado, mostrar botón cerrar sesión también en móvil */}
-          {isLoggedIn && (
-            <button
-              onClick={() => {
-                onLogout();
-                setMenuOpen(false);
-              }}
-              className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition"
-            >
-              Cerrar Sesión
-            </button>
-          )}
-
-          <button
-            onClick={toggleMenu}
-            aria-label="Abrir menú"
-            className="text-gray-600 focus:outline-none"
-          >
-            {menuOpen ? (
-              // Icono cerrar (X)
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            ) : (
-              // Icono hamburguesa (3 líneas)
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            )}
-          </button>
-        </div>
+        {/* BOTON MENU MOVIL */}
+        <button onClick={toggleMenu} className="md:hidden text-gray-700">
+          {menuOpen ? "✕" : "☰"}
+        </button>
       </div>
 
-      {/* Menú móvil desplegable */}
+      {/* MENU MOVIL DESPLEGABLE */}
       {menuOpen && (
-        <nav className="md:hidden bg-white shadow-md border-t border-gray-200">
+        <div className="md:hidden bg-white border-t border-gray-200 shadow-lg animate-fadeDown">
+          
           <button
             onClick={() => handleNavigate('home')}
-            className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100"
+            className="block w-full text-left px-5 py-3 font-semibold text-gray-700 hover:bg-gray-100"
           >
             Inicio
           </button>
+
           <button
             onClick={() => handleNavigate('rent')}
-            className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100"
+            className="block w-full text-left px-5 py-3 font-semibold text-gray-700 hover:bg-gray-100"
           >
-            Rentar un Vehículo
+            Rentar Vehículo
           </button>
-          <button
-            onClick={() => handleNavigate('owner')}
-            className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100"
-          >
-            Publicar mi Vehículo
-          </button>
-        </nav>
+
+          {userRole === "admin" && (
+            <button
+              onClick={() => handleNavigate('owner')}
+              className="block w-full text-left px-5 py-3 font-semibold text-blue-600 hover:bg-blue-50"
+            >
+              Publicar Vehículo
+            </button>
+          )}
+
+          {isLoggedIn && (
+            <button
+              onClick={onLogout}
+              className="block w-full text-left px-5 py-3 font-semibold text-red-600 hover:bg-red-50"
+            >
+              Cerrar Sesión
+            </button>
+          )}
+        </div>
       )}
     </header>
   );

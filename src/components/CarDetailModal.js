@@ -1,101 +1,132 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 
 const CarDetailModal = ({ car, onClose }) => {
   if (!car) return null;
 
+  // Soporte universal imágenes
+  const images = car.images?.length > 0 ? car.images : [car.imageUrl];
+  const [index, setIndex] = useState(0);
+
+  const next = () => setIndex(prev => (prev + 1) % images.length);
+  const prev = () => setIndex(prev => (prev - 1 + images.length) % images.length);
+
+  // Evita scroll de fondo cuando el modal está abierto
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => (document.body.style.overflow = "auto");
+  }, []);
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100 opacity-100">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
 
-        <div className="p-6 md:p-8">
-          <div className="flex justify-between items-start mb-6">
-            <h2 className="text-3xl font-bold text-gray-900">
-              {car.brand} {car.model} ({car.year})
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-800 transition-colors"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
+      {/* Caja modal */}
+      <div className="bg-white/95 rounded-3xl shadow-2xl overflow-hidden w-full max-w-3xl max-h-[92vh] animate-scaleIn relative">
+
+        {/* Cerrar con X — estilo exacto que pediste */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-white text-xl font-bold hover:text-red-400 transition-all z-50"
+        >
+          ✕
+        </button>
+
+        {/* Scroll interno seguro */}
+        <div className="p-6 md:p-10 overflow-y-auto max-h-[92vh]">
+
+          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 drop-shadow-sm">
+            {car.brand} {car.model} — {car.year}
+          </h2>
+
+          {/* Galería */}
+          <div className="relative w-full h-72 md:h-80 rounded-xl overflow-hidden shadow-lg border border-gray-200">
+
+            <img
+              src={images[index]}
+              className="w-full h-full object-cover transition-all duration-300"
+            />
+
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={prev}
+                  className="absolute top-1/2 left-3 -translate-y-1/2 text-white text-4xl font-bold hover:text-red-400 transition select-none"
+                >
+                  ‹
+                </button>
+
+                <button
+                  onClick={next}
+                  className="absolute top-1/2 right-3 -translate-y-1/2 text-white text-4xl font-bold hover:text-red-400 transition select-none"
+                >
+                  ›
+                </button>
+              </>
+            )}
+
+            <div className="absolute bottom-3 w-full flex justify-center gap-2">
+              {images.map((_, i) => (
+                <div
+                  key={i}
+                  onClick={() => setIndex(i)}
+                  className={`h-3 w-3 rounded-full cursor-pointer transition-all ${
+                    index === i ? "bg-red-400 scale-110" : "bg-white/60 hover:bg-white"
+                  }`}
                 />
-              </svg>
-            </button>
-          </div>
-
-          <img
-            src={car.imageUrl}
-            alt={`${car.brand} ${car.model}`}
-            className="w-full h-64 object-cover rounded-xl mb-6 shadow-md"
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <p className="text-gray-600 text-lg mb-2">
-                <span className="font-semibold text-gray-800">Ubicación:</span>{' '}
-                {car.location}
-              </p>
-             <p className="text-gray-600 text-lg mb-2">
-            <span className="font-semibold text-gray-800">Precio:</span> ${car.pricePerDay}/semanal
-                </p>
-
-              <p className="text-gray-600 text-lg mb-2">
-                <span className="font-semibold text-gray-800">Disponible desde:</span>{' '}
-                {car.startDate ?? car.availability?.startDate}
-              </p>
-              
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Características:
-              </h3>
-              <ul className="list-disc list-inside text-gray-700 text-lg space-y-1">
-                {car.features.map((feature, index) => (
-                  <li key={index}>{feature}</li>
-                ))}
-              </ul>
+              ))}
             </div>
           </div>
 
-          <h3 className="text-xl font-semibold text-gray-900 mb-3">
-            Descripción:
-          </h3>
-          <p className="text-gray-700 text-lg leading-relaxed mb-8">
-            {car.description}
-          </p>
+          {/* Info */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <div className="text-lg space-y-2">
+              <p><span className="font-bold">Ubicación:</span> {car.location}</p>
+              <p><span className="font-bold">Precio:</span>
+                <span className="text-blue-600 font-bold"> ${car.pricePerDay}/semana</span>
+              </p>
+              <p><span className="font-bold">Disponible desde:</span> {car.startDate ?? car.availability?.startDate}</p>
+            </div>
 
-          <div className="flex flex-col md:flex-row gap-4">
+            {car.features?.length > 0 && (
+              <div>
+                <h3 className="text-xl font-semibold mb-2">Características</h3>
+                <ul className="list-inside list-disc text-gray-700 space-y-1">
+                  {car.features.map((f, i) => <li key={i}>{f}</li>)}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {/* Descripción */}
+          {car.description && (
+            <div className="mt-8">
+              <h3 className="text-xl font-semibold mb-2">Descripción</h3>
+              <p className="text-gray-700 leading-relaxed">{car.description}</p>
+            </div>
+          )}
+
+          {/* Contacto */}
+          <div className="flex flex-col md:flex-row gap-4 mt-10">
+
             {car.phoneNumber && (
-              <a
-                href={`tel:${car.phoneNumber}`}
-                className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-colors text-xl font-semibold text-center"
-              >
-                Llamar al Propietario
+              <a href={`tel:${car.phoneNumber}`}
+                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-bold rounded-xl text-center shadow-md transition">
+                ☎ Llamar
               </a>
             )}
 
             {car.phoneNumber && (
               <a
-                href={`https://wa.me/503${car.phoneNumber.replace(/\D/g, '')}?text=Hola, estoy interesado en rentar tu vehículo ${car.brand} ${car.model}.`}
+                href={`https://wa.me/503${car.phoneNumber.replace(/\D/g,'')}?text=Hola, estoy interesado(a) en tu vehículo ${car.brand} ${car.model}.`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition-colors text-xl font-semibold text-center"
-              >
-                Contactar por WhatsApp
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 text-lg font-bold rounded-xl text-center shadow-md transition">
+                💬 WhatsApp
               </a>
             )}
           </div>
+
         </div>
+
       </div>
     </div>
   );

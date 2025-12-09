@@ -8,7 +8,7 @@ const FeedbackForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus('Enviando...');
+    setStatus('Enviando comentario...');
 
     try {
       const res = await fetch('https://formsubmit.co/ajax/danielvallec98@gmail.com', {
@@ -17,60 +17,91 @@ const FeedbackForm = () => {
           'Content-Type': 'application/json',
           Accept: 'application/json'
         },
-        body: JSON.stringify({
-          email,
-          comment
-        })
+        body: JSON.stringify({ email, comment })
       });
 
-      if (!res.ok) throw new Error('Error al enviar el feedback.');
+      if (!res.ok) throw new Error('Error al enviar respuesta.');
 
-      setStatus('¡Gracias por tu comentario!');
+      setStatus('¡Gracias por tu comentario! 📨');
       setEmail('');
       setComment('');
     } catch (error) {
-      console.error(error);
-      setStatus('Error enviando el comentario. Intenta de nuevo.');
+      setStatus('❌ Error al enviar, intenta nuevamente.');
     }
   };
 
   return (
-    <section className="max-w-md mx-auto mt-12 p-6 bg-white rounded shadow-md">
-      <h3 className="text-2xl font-semibold mb-4 text-gray-900">Envíanos Tu opinion</h3>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <section
+      className="
+        max-w-md mx-auto my-16 p-8 bg-white 
+        shadow-lg rounded-2xl border border-gray-200
+        transition-all duration-300 hover:shadow-2xl
+      "
+    >
+      <h3 className="text-3xl font-bold text-center mb-6 text-gray-900">
+        📩 Envíanos tu opinión
+      </h3>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        
+        {/* Email */}
         <div>
-          <label htmlFor="email" className="block mb-1 text-gray-700">Correo electrónico:</label>
+          <label htmlFor="email" className="text-gray-700 font-semibold block mb-1">
+            Correo electrónico
+          </label>
           <input
             id="email"
             type="email"
             required
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className="w-full border rounded px-3 py-2"
-            placeholder="tuemail@ejemplo.com"
+            placeholder="ejemplo@email.com"
+            className="
+              w-full px-4 py-2.5 rounded-lg border 
+              focus:ring-2 focus:ring-blue-500 focus:outline-none
+              text-gray-700 shadow-sm
+            "
           />
         </div>
 
+        {/* Comentario */}
         <div>
-          <label htmlFor="comment" className="block mb-1 text-gray-700">Comentario:</label>
+          <label htmlFor="comment" className="text-gray-700 font-semibold block mb-1">
+            Comentario
+          </label>
           <textarea
             id="comment"
             required
+            rows="4"
             value={comment}
             onChange={e => setComment(e.target.value)}
-            className="w-full border rounded px-3 py-2"
-            rows="4"
-            placeholder="Escribe tu comentario aquí"
+            placeholder="Escribe tu experiencia, sugerencia u opinión..."
+            className="
+              w-full px-4 py-2.5 rounded-lg border 
+              focus:ring-2 focus:ring-blue-500 focus:outline-none
+              text-gray-700 shadow-sm resize-none
+            "
           />
         </div>
 
+        {/* Botón */}
         <button
           type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+          className="
+            w-full bg-blue-600 text-white py-3 rounded-xl 
+            text-lg font-semibold transition-all duration-200
+            hover:bg-blue-700 active:scale-95
+          "
         >
-          Enviar
+          Enviar Opinión
         </button>
-        {status && <p className="mt-2 text-sm text-gray-700">{status}</p>}
+
+        {/* Estado */}
+        {status && (
+          <p className="text-center text-sm font-medium mt-2 text-gray-700">
+            {status}
+          </p>
+        )}
       </form>
     </section>
   );
