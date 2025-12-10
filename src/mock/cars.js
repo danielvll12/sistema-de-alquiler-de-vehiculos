@@ -8,17 +8,25 @@ const carSchema = new mongoose.Schema({
   },
   brand: String,
   model: String,
-  year: String,
-  pricePerDay: String,
+  year: Number,
+  pricePerDay: Number,
   location: String,
-  imageUrl: String,
+
+  /** ARRAY de URLs de imágenes */
+  images: {
+    type: [String],
+    default: ["https://via.placeholder.com/500?text=Vehículo"] // Imagen por defecto si no se sube ninguna
+  },
+
   description: String,
   features: {
     type: [String],
     default: []
   },
-  startDate: String,       // ✅ Solo esta fecha se mantiene
+
+  startDate: String,
   phoneNumber: String,
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('Car', carSchema);

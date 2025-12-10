@@ -7,7 +7,7 @@ const OwnerForm = ({ onAddCar }) => {
     year: '',
     pricePerDay: '',
     location: '',
-    images: [], 
+    imageUrl: '',
     description: '',
     features: '',
     startDate: '',
@@ -19,31 +19,17 @@ const OwnerForm = ({ onAddCar }) => {
     setCarData(prev => ({ ...prev, [name]: value }));
   };
 
-  /** 📌 SUBIR MÚLTIPLES IMÁGENES **/
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
+    const file = e.target.files[0];
+    if (!file) return;
 
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCarData(prev => ({
-          ...prev,
-          images: [...prev.images, reader.result] //⬅ Se agregan todas
-        }));
-      };
-      reader.readAsDataURL(file);
-    });
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setCarData(prev => ({ ...prev, imageUrl: reader.result }));
+    };
+    reader.readAsDataURL(file);
   };
 
-  /** ❌ ELIMINAR IMAGEN POR CLICK EN LA X **/
-  const removeImage = (index) => {
-    setCarData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
-  };
-
-  /** 📤 Enviar al backend */
   const sendCarToBackend = async (newCar) => {
     const token = localStorage.getItem('token');
 
@@ -83,7 +69,7 @@ const OwnerForm = ({ onAddCar }) => {
         year: '',
         pricePerDay: '',
         location: '',
-        images: [],
+        imageUrl: '',
         description: '',
         features: '',
         startDate: '',
@@ -98,21 +84,23 @@ const OwnerForm = ({ onAddCar }) => {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
 
-      {/* Fondo */}
+      {/* Fondo estilo Home principal */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-60"
         style={{ backgroundImage:"url('https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg')" }}
       ></div>
 
+      {/* Contenedor con blur + luz + transparencia */}
       <form 
         onSubmit={handleSubmit}
         className="relative z-10 w-[90%] md:w-[50%] lg:w-[40%] p-10
-        bg-white/10 backdrop-blur-xl border border-white/30 shadow-2xl rounded-2xl text-white space-y-5"
+        bg-white/10 backdrop-blur-xl border border-white/30 shadow-2xl rounded-2xl text-white animate-fadeIn space-y-5"
       >
         <h2 className="text-4xl font-extrabold text-center drop-shadow mb-4">
           🚘 Publicar nuevo vehículo
         </h2>
 
+        {/* Inputs */}
         {[
           {id:'brand',label:'Marca'},
           {id:'model',label:'Modelo'},
@@ -132,36 +120,12 @@ const OwnerForm = ({ onAddCar }) => {
           </div>
         ))}
 
-        {/* 📌 IMÁGENES */}
         <div>
-          <label className="block font-semibold mb-1">Fotos del Vehículo</label>
-          <input type="file" accept="image/*" multiple onChange={handleImageChange}
-            className="text-white w-full py-2 cursor-pointer"
+          <label className="block font-semibold mb-1">Foto del Vehículo</label>
+          <input type="file" accept="image/*" onChange={handleImageChange}
+            className="text-white w-full py-2 cursor-pointer" required
           />
-
-          {/* Vista con eliminar X */}
-          {carData.images.length > 0 && (
-            <div className="flex gap-3 mt-3 overflow-x-auto">
-              {carData.images.map((img, i) => (
-                <div key={i} className="relative group">
-                  
-                  {/* Miniatura */}
-                  <img src={img} className="h-20 w-20 object-cover rounded-xl shadow-md" />
-
-                  {/* ❌ Botón para eliminar */}
-                  <button
-                    onClick={() => removeImage(i)}
-                    className="absolute top-1 right-1 bg-black/70 hover:bg-red-600 
-                               text-white rounded-full w-6 h-6 flex items-center 
-                               justify-center text-xs font-bold opacity-90"
-                  >
-                    ✕
-                  </button>
-
-                </div>
-              ))}
-            </div>
-          )}
+          {carData.imageUrl && <img src={carData.imageUrl} className="mt-3 rounded-xl shadow-lg max-h-52 w-full object-cover" />}
         </div>
 
         <div>
@@ -187,4 +151,4 @@ const OwnerForm = ({ onAddCar }) => {
   );
 };
 
-export default OwnerForm;
+export default OwnerForm ;
